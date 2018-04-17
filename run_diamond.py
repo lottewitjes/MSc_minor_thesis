@@ -41,7 +41,6 @@ if __name__ == "__main__":
 
     filelist = os.listdir(input_directory)
     for file in filelist:
-        output_file = file.split("_")
-        output_file = "".join(output_file[0], output_file[1])
+        output_file = file.strip(".fastq")
         run_diamond(file, database, output_directory, output_file)
- 
+
