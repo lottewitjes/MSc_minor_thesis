@@ -20,7 +20,7 @@ __email__ = "lottewitjes@outlook.com"
 __date__ = "18th of April 2018"
 __version__ = "1.0"
 
-def run_diamond(file, output_directory):
+def run_trimmomatic(file, output_directory):
     """A function that runs Trimmomatic  on the input files.
     """
     file_output = file.split(".")[0] + "_trimmed.fastq"
