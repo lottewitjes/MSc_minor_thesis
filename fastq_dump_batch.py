@@ -3,6 +3,7 @@
 """A Python script to run fastq-dump on a list of accession contained in a txt file
 
 python fastq_dump_batch.py <accessions_file>
+
 """
 
 import sys
@@ -11,6 +12,7 @@ import os.path
 
 __author__ = "Lotte Witjes"
 __email__ = "lottewitjes@outlook.com"
+__date__ = "17th of April 2018"
 __version__ = "1.0"
 
 def run_fastq_dump(accession):
