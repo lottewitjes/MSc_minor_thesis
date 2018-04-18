@@ -24,7 +24,8 @@ __version__ = "1.0"
 def run_diamond(blast_type, fasta_file, database, output_directory, output_file):
     """A function that runs DIAMOND on the input files.
     """
-    cmd = "/metagenomics/lottewitjes/programs/diamond {} --query {} --db {} --threads 20 --max-target-seqs 1 --outfmt tab --out {}".format(blast_type, fasta_file, database, output_file)
+    file_output = str(output_directory) + st r(file.split(".")[0]) + "_trimmed.fastq"
+    cmd = "/metagenomics/lottewitjes/programs/diamond {} --query {} --db {} --threads 20 --max-target-seqs 1 --outfmt tab --out {}".format(blast_type, fasta_file, database, file_output)
     if not os.path.exists(output_directory):
         os.makedirs(output_directory)
     else:
@@ -43,6 +44,5 @@ if __name__ == "__main__":
 
     filelist = os.listdir(input_directory)
     for file in filelist:
-        output_file = file.strip(".fastq")
         run_diamond(blast_type, file, database, output_directory, output_file)
 
