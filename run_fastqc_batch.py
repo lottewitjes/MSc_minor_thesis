@@ -8,7 +8,7 @@ Keyword arguments:
 - input_directory
 - output_directory
 Returns:
-- filled output_directory containing filtered read files
+- filled output_directory containing results of fastQC
 """
 
 import sys
