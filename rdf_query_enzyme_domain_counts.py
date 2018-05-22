@@ -23,16 +23,14 @@ def run_query(graph, query):
     results = sparql.query().convert()
     return results
 
-def make_count_dic(query_output, output_file):
-    results_dic = {}
-    for result in query_output["results"]["bindings"]:
-        sample = result["sample"]["value"].split("/")[-1]
-        if sample not in results_dic:
-            results_dic[sample] = []
-        acc = result["acc"]["value"]
-        acc_count = result["acc_count"]["value"]
-        results_dic[sample].append([acc, acc_count])
-    print results_dic["NG-5450_A"]
+def write_count_file(query_output, output_file):
+    with open(output_file, "w") as thefile:
+        for result in query_output["results"]["bindings"]:
+            sample = result["sample"]["value"].split("/")[-1]
+            acc = result["acc"]["value"]
+            acc_count = result["acc_count"]["value"]
+            line = "\t".join([sample, acc, acc_count])
+            thefile.write(line + "\n")
 
 if __name__ == "__main__":
     graph_url = "http://10.117.11.77:7200/repositories/metagenomics_ileum"
@@ -40,8 +38,7 @@ if __name__ == "__main__":
     output_file = sys.argv[2]
 
     sparql_query = "PREFIX gbol: <http://gbol.life/0.1/> PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> SELECT ?sample ?acc (COUNT(?acc) as ?acc_count) WHERE { VALUES ?db {<http://gbol.life/0.1/db/%s>} ?sample a gbol:Sample . ?dnaobject gbol:sample ?sample . ?dnaobject gbol:feature ?gene . ?gene a gbol:Gene . ?gene gbol:transcript/gbol:feature ?cds . ?cds gbol:protein ?protein . ?protein gbol:xref ?xref . ?xref gbol:db ?db . ?xref gbol:accession ?acc . } GROUP BY ?sample ?acc ORDER BY ?sample ?acc" % (str(query_type))
-    print sparql_query
 
     results = run_query(graph_url, sparql_query)
 
-    make_count_dic(results, output_file)
+    write_count_file(results, output_file)
