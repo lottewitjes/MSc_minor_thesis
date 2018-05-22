@@ -1,11 +1,11 @@
 #!/usr/bin/evn/python
 
-"""A Python script that writes a fasta file from  a gene or protein csv database resulting from a SAPP SPARQL query.
+"""A Python script that writes a fasta file from a gene or protein csv database resulting from a SAPP SPARQL query.
 
 python write_fasta_csv.py <input> <output>
 
 Keyword arguments:
-- input --> csv output containing where the first column is the header and the second column the sequence
+- input --> csv where the first column is the header and the second column the sequence
 - output --> fasta file name
 Returns:
 - written output --> csv converted to fasta
@@ -25,8 +25,11 @@ def parse_csv_write_fasta(input, output):
         with open(output, "w") as file2:
             next(file1) #skip the column headers
             for line in file1:
-                header, sequence = line.split(",")
-                file2.write(">" + str(header) + "\n" + str(sequence))
+                if (">gene" not in line) and ("sequence" not in line):
+                    header, sequence = line.split(",")
+                    header = header.strip('"')
+                    sequence = sequence.strip('"')
+                    file2.write(">" + str(header) + "\n" + str(sequence))
 
 if __name__ == "__main__":
     input_file = sys.argv[1]
