@@ -59,6 +59,18 @@ def sparql_query(graph, query):
     results = sparql.query().convert()
     return results
 
+def write_count_matrix(query_output, output_file):
+    results_dic = {}
+    for result in query_output["results"]["bindings"]:
+        sample = result["sample"]["value"].split("/")[-1]
+        if sample not in results_dic:
+            results_dic[sample] = []
+        acc = result["acc"]["value"]
+        acc_count = result["acc_count"]["value"]
+        results_dic[sample].append([acc, acc_count])
+    print results_dic["NG-5450_A"]
+
+
 if __name__ == "__main__":
     graph_url = "http://10.117.11.77:7200/repositories/metagenomics_ileum"
     query_type = sys.argv[1] #domain or enzyme
@@ -69,8 +81,4 @@ if __name__ == "__main__":
     elif query_type == "enzyme":
         results = sparql_query(graph_url, enzyme_query)
 
-    #print results
-    for result in results["results"]["bindings"]:
-        sample = result["sample"]["value"].split("/")[-1]
-        acc = result["acc"]["value"]
-        print acc
+    write_count_matrix(results, output_file)
