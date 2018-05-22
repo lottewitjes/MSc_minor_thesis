@@ -2,7 +2,14 @@
 
 """A Python script to query a RDF graph returning enzyme/domain counts per sample.
 
-python rdf_query_enzyme_domain_counts.py
+python rdf_query_enzyme_domain_counts.py <query_type> <output_file>
+
+Keyword arguments:
+query_type --> pfam/ec for domain or enzyme counts
+output_file --> filename for output
+
+Returns:
+filled output_file --> tab-separated file with sample, pfam/ec accession, count
 
 """
 
