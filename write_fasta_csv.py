@@ -7,6 +7,7 @@ python write_fasta_csv.py <input> <output>
 Keyword arguments:
 - input --> csv where the first column is the header and the second column the sequence
 - output --> fasta file name
+
 Returns:
 - written output --> csv converted to fasta
 """

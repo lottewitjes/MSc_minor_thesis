@@ -19,8 +19,6 @@ __date__ = "18th of April 2018"
 __version__ = "1.0"
 
 def run_qtrim(file, output_directory):
-    """A function that runs Qtrim on the input files.
-    """
     file_output = str(output_directory) + str(file.split(".")[0]) + "_trimmed.fastq"
     cmd = "/metagenomics/lottewitjes/programs/QTrim_v1_1/QTrim_v1_1 -fastq {} -o {}".format(file, file_output)
     if not os.path.exists(output_directory):

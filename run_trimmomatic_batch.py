@@ -21,8 +21,6 @@ __date__ = "18th of April 2018"
 __version__ = "1.0"
 
 def run_trimmomatic(file, output_directory):
-    """A function that runs Trimmomatic  on the input files.
-    """
     file_output = str(output_directory) + str(file.split(".")[0]) + "_trimmed.fastq"
     cmd = "java -jar /metagenomics/lottewitjes/programs/Trimmomatic-0.36/trimmomatic-0.36.jar SE -threads 4 -phred33 {} {} ILLUMINACLIP:TruSeq3-SE:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36".format(file, file_output)
     if not os.path.exists(output_directory):
