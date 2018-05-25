@@ -20,7 +20,7 @@ from SPARQLWrapper import SPARQLWrapper, JSON
 
 __author__ = "Lotte Witjes"
 __email__ = "lottewitjes@outlook.com"
-__date__ = "22th of May 2018"
+__date__ = "22 of May 2018"
 __version__ = "1.0"
 
 def run_query(graph, query):
