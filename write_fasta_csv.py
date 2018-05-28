@@ -26,11 +26,10 @@ def parse_csv_write_fasta(input, output):
         with open(output, "w") as file2:
             next(file1) #skip the column headers
             for line in file1:
-                if (">gene" not in line) and ("sequence" not in line):
-                    header, sequence = line.split(",")
-                    header = header.strip('"')
-                    sequence = sequence.strip('"')
-                    file2.write(">" + str(header) + "\n" + str(sequence))
+                header, sequence = line.split(",")
+                header = header.strip('"')
+                sequence = sequence.strip('"')
+                file2.write(">" + str(header) + "\n" + str(sequence))
 
 if __name__ == "__main__":
     input_file = sys.argv[1]
