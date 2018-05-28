@@ -33,7 +33,7 @@ def write_sequence_file(query_output, output_file):
     with open(output_file, "w") as thefile:
         for result in query_output["results"]["bindings"]:
             gene = result["gene"]["value"]
-            sequence = result["acc"]["value"]
+            sequence = result["lcsequence"]["value"]
             line = ",".join([gene, sequence])
             thefile.write(line + "\n")
 
@@ -46,6 +46,6 @@ if __name__ == "__main__":
     sparql_query_domain = "PREFIX gbol: <http://gbol.life/0.1/> PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> SELECT DISTINCT ?gene ?acc WHERE { VALUES ?db {<http://gbol.life/0.1/db/pfam>} . ?gene a gbol:Gene . ?gene gbol:transcript/gbol:feature ?cds . ?cds gbol:protein ?protein . ?protein gbol:xref ?xref . ?xref gbol:db ?db . ?xref gbol:accession ?acc . }"
     sparql_query_ec = "PREFIX gbol: <http://gbol.life/0.1/> PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> SELECT DISTINCT ?gene ?acc WHERE { VALUES ?db {<http://gbol.life/0.1/db/ec>} . ?gene a gbol:Gene . ?gene gbol:transcript/gbol:feature ?cds . ?cds gbol:protein ?protein . ?protein gbol:xref ?xref . ?xref gbol:db ?db . ?xref gbol:accession ?acc . }"
 
-    results = run_query(graph_url, sparql_query_ec)
+    results = run_query(graph_url, sparql_query)
 
     write_sequence_file(results, output_file)

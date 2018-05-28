@@ -36,7 +36,7 @@ def pfam_ec_db_parser(pfam_ec_db):
 
 def blast_output_parser(blast_output):
     alist = []
-    with open (blast_output, "r") as thefile:
+    with open(blast_output, "r") as thefile:
         for line in thefile:
             elements = line.strip().split("\t")
             gene_protein = elements[1]
@@ -65,10 +65,10 @@ def write_pfam_ec_counts(pfam_ec_count_dic, sample_id, output_file):
 if __name__ == "__main__":
     #Get variables from command line
     print "Loading arguments from command line..."
-    sample_id = sys.argv[1]
-    blast_output = sys.argv[2]
-    pfam_ec_db = sys.argv[3]
-    output_file = sys.argv[4]
+    #sample_id = sys.argv[1]
+    output_dir = sys.argv[1]
+    pfam_ec_db = sys.argv[2]
+    #output_file = sys.argv[3]
     print "Arguments loaded"
 
     #Parse the Pfam/EC database
@@ -76,17 +76,26 @@ if __name__ == "__main__":
     pfam_ec_dic = pfam_ec_db_parser(pfam_ec_db)
     print "Pfam/EC database parsed"
 
-    #Parse the BLASTN/X output
-    print "Parsing the BLASTN/X output..."
-    blast_list = blast_output_parser(blast_output)
-    print "BLASTN/X output parsed"
+    file_list = os.listdir(output_dir)
+    for file in file_list:
+        if file.startswith("NG-5"):
+            sample_id = file.split("_")
+            sample_id = "_".join(sample_id[0:2])
+            output_file = "{}_pfam.tsv".format(sample_id)
+            file_name = "".join([output_dir, file])
+            print sample_id, output_file
 
-    #Make a Pfam/EC count dictionary
-    print "Counting Pfam/EC occurrences..."
-    pfam_ec_count_dic = count_pfam_ec(pfam_ec_dic, blast_list)
-    print "Pfam/EC occurrences counted"
+            #Parse the BLASTN/X output
+            print "Parsing the BLASTN/X output..."
+            blast_list = blast_output_parser(file_name)
+            print "BLASTN/X output parsed"
 
-    #Write the count dictionary to a TSV
-    print "Writing Pfam/EC occurrences to file..."
-    write_pfam_ec_counts(pfam_ec_count_dic, sample_id, output_file)
-    print "Pfam/EC occurrences written"
+            #Make a Pfam/EC count dictionary
+            print "Counting Pfam/EC occurrences..."
+            pfam_ec_count_dic = count_pfam_ec(pfam_ec_dic, blast_list)
+            print "Pfam/EC occurrences counted"
+
+            #Write the count dictionary to a TSV
+            print "Writing Pfam/EC occurrences to file..."
+            write_pfam_ec_counts(pfam_ec_count_dic, sample_id, output_file)
+            print "Pfam/EC occurrences written"
