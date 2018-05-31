@@ -40,8 +40,9 @@ def blast_output_parser(blast_output):
         for line in thefile:
             elements = line.strip().split("\t")
             gene_protein = elements[1]
+            bit_score = float(elements[11])
             e_value = float(elements[10])
-            if e_value < 0.001:
+            if e_value <= 0.0000001 and bit_score >= 74:
                 alist.append(gene_protein)
     return alist
 
