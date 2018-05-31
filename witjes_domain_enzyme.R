@@ -17,7 +17,7 @@ library(vegan)
 #Set working directory
 setwd("/media/lottewitjes/Lotte Witjes/MSc_minor_thesis/statistical_analysis/")
 
-##################################reads###########################################
+##################################reads#########################################################################################################################
 #Load data
 read_data = read.table(file="data_overview.tsv", sep="\t", header=TRUE)
 read_data = read_data[,1:5]
@@ -40,9 +40,9 @@ read_plot = ggplot(data=read_data_tp, aes(x=X, y=value, fill=variable)) +
                                     plot.title=element_text(size=16,colour="black"))
 read_plot
 
-###############################domain/enzyme analyses and plots######################################
+###############################domain/enzyme analyses and plots#################################################################################################
 #Load data
-pfam_count = read.table(file="blastx_pfam_counts.tsv", sep="\t", header=FALSE)
+pfam_count = read.table(file="blastx_pfam_count.tsv", sep="\t", header=FALSE)
 ec_count = read.table(file="blastx_ec_count.tsv", sep="\t", header=FALSE)
 
 #Set column names
@@ -60,7 +60,7 @@ subject = c("1 male", "2 female", "1 male", "1 male", "1 male", "1 male", "2 fem
 pfam_matrix_count = acast(pfam_count, sample~Pfam, value.var="count", fill=0)
 ec_matrix_count = acast(ec_count, sample~EC, value.var="count", fill=0)
 
-#Domain/enzyme alpha/beta/gamma diversity##############################################################################
+#Domain/enzyme alpha/beta/gamma diversity#######################################################################################################################
 beta_diversity_pfam = diversity(pfam_matrix_count, index="shannon")
 alpha_diversity_pfam = fisher.alpha(pfam_matrix_count)
 richness_pfam = specnumber(pfam_matrix_count)
@@ -159,7 +159,7 @@ richness_ec_plot
 pfam_matrix_count = scale(pfam_matrix_count, center=FALSE, scale=TRUE)
 ec_matrix_count = scale(ec_matrix_count, center=FALSE, scale=TRUE)
 
-#PCA with count data##################################################################################################
+#PCA with count data############################################################################################################################################
 pfam_pca_count = prcomp(pfam_matrix_count, center=FALSE, scale=FALSE)
 ec_pca_count = prcomp(ec_matrix_count, center=FALSE, scale=FALSE)
 
@@ -191,11 +191,11 @@ ec_pca_count_plot = ggplot(ec_pca_count$x,aes(x=PC1,y=PC2,color=subject)) +
                                             plot.title=element_text(size=16,colour="black"))
 ec_pca_count_plot
 
-#PCA with binary data###################################################################################################
-pfam_matrix_binary = pfam_matrix_count
+#PCA with binary data###########################################################################################################################################
+pfam_matrix_binary = cbind(pfam_matrix_count)
 pfam_matrix_binary[pfam_matrix_binary>0] = 1
 
-ec_matrix_binary = ec_matrix_count
+ec_matrix_binary = cbind(ec_matrix_count)
 ec_matrix_binary[ec_matrix_binary>0] = 1
 
 pfam_pca_binary = prcomp(pfam_matrix_binary, center=FALSE, scale=FALSE)
@@ -229,13 +229,13 @@ ec_pca_binary_plot = ggplot(ec_pca_binary$x,aes(x=PC1,y=PC2,color=subject)) +
                                              plot.title=element_text(size=16,colour="black"))
 ec_pca_binary_plot
 
-#Hierarchical clustering with count data##################################################################################
+#Hierarchical clustering with count data########################################################################################################################
 rownames(pfam_matrix_count) = sample
 hc.complete = hclust(dist(pfam_matrix_count), method="complete")
 plot(hc.complete, main="Complete linkage", xlab="", sub="", cex=0.9)
 
 
-#Venn-diagram BETWEEN subjects####################################################################################################
+#Venn-diagram BETWEEN subjects##################################################################################################################################
 #Obtain list of domains/enzymes in each subject
 subject1_pfam = unique(pfam_count[pfam_count$sample %in% c("NG-5450_A", "NG-5593_1A", "NG-5593_1B", "NG-5593_1C", "NG-5593_1D"),2])
 subject2_pfam = unique(pfam_count[pfam_count$sample %in% c("NG-5450_B", "NG-5593_2A", "NG-5593_2B", "NG-5593_2C", "NG-5593_2D"),2])
@@ -304,6 +304,7 @@ venn_pfam = draw.quad.venn(area1=length(subject1_pfam), area2=length(subject2_pf
                           "Subject 3 male", "Subject 4 female"),
                fill=c("#a6cee3", "#b2df8a", "#1f78b4", "#33a02c"),
                cex=1.5, cat.cex=1.5)
+grid.text("Pfam domains", vjust=-30, gp=gpar(fontfamily="serif",cex=1.5))
 
 grid.newpage()
 venn_ec = draw.quad.venn(area1=length(subject1_ec), area2=length(subject2_ec),
@@ -318,14 +319,15 @@ venn_ec = draw.quad.venn(area1=length(subject1_ec), area2=length(subject2_ec),
                                     "Subject 3 male", "Subject 4 female"),
                          fill=c("#a6cee3", "#b2df8a", "#1f78b4", "#33a02c"),
                          cex=1.5, cat.cex=1.5)
+grid.text("ECs", vjust=-30, gp=gpar(fontfamily="serif",cex=1.5))
 
-#Venn-diagram WITHIN subjects#############################################################################################
+#Venn-diagram WITHIN subjects###################################################################################################################################
 subject1_samples = c("NG-5593_1A", "NG-5593_1B", "NG-5593_1C", "NG-5593_1D")
 subject2_samples = c("NG-5593_2A", "NG-5593_2B", "NG-5593_2C", "NG-5593_2D")
 subject3_samples = c("NG-5593_3A", "NG-5593_3B", "NG-5593_3C", "NG-5593_3D")
 subject4_samples = c("NG-5593_4A", "NG-5593_4B", "NG-5593_4C", "NG-5593_4D")
 
-within_subjects_venn = function(samples, pfam_ec_count) {
+within_subjects_venn = function(subject_id, samples, pfam_ec_count) {
   t1 = unique(pfam_ec_count[pfam_ec_count$sample == samples[1],2])
   t2 = unique(pfam_ec_count[pfam_ec_count$sample == samples[2],2])
   t3 = unique(pfam_ec_count[pfam_ec_count$sample == samples[3],2])
@@ -354,19 +356,20 @@ within_subjects_venn = function(samples, pfam_ec_count) {
                                         "Day 3 morning", "Day 3, afternoon"),
                              fill=c("#a6cee3", "#b2df8a", "#1f78b4", "#33a02c"),
                              cex=1.5, cat.cex=1.5)
+  grid.text(subject_id, vjust=-30, gp=gpar(fontfamily="serif",cex=1.5))
 }
 
-venn_subject1_pfam = within_subjects_venn(subject1_samples, pfam_count)
-venn_subject2_pfam = within_subjects_venn(subject2_samples, pfam_count)
-venn_subject3_pfam = within_subjects_venn(subject3_samples, pfam_count)
-venn_subject4_pfam = within_subjects_venn(subject4_samples, pfam_count)
+venn_subject1_pfam = within_subjects_venn("Subject 1, male, Pfam domains", subject1_samples, pfam_count)
+venn_subject2_pfam = within_subjects_venn("Subject 2, female, Pfam domains", subject2_samples, pfam_count)
+venn_subject3_pfam = within_subjects_venn("Subject 3, male, Pfam domains", subject3_samples, pfam_count)
+venn_subject4_pfam = within_subjects_venn("Subject 4, female, Pfam domains", subject4_samples, pfam_count)
 
-venn_subject1_ec = within_subjects_venn(subject1_samples, ec_count)
-venn_subject2_ec = within_subjects_venn(subject2_samples, ec_count)
-venn_subject3_ec = within_subjects_venn(subject3_samples, ec_count)
-venn_subject4_ec = within_subjects_venn(subject4_samples, ec_count)
+venn_subject1_ec = within_subjects_venn("Subject 1, male, ECs", subject1_samples, ec_count)
+venn_subject2_ec = within_subjects_venn("Subject 2, female, ECs", subject2_samples, ec_count)
+venn_subject3_ec = within_subjects_venn("Subject 3, male, ECs", subject3_samples, ec_count)
+venn_subject4_ec = within_subjects_venn("Subject 4, female, ECs", subject4_samples, ec_count)
 
-#Rarefaction curve#######################################################################################################
+#Rarefaction curve##############################################################################################################################################
 unique_pfam = c()
 for (sample in levels(pfam_count$sample)) {
   unique_pfam[sample] = length(unique(pfam_count[pfam_count$sample == sample,2]))
@@ -403,3 +406,61 @@ rarefaction_ec = ggplot(data=cbind(read_count_per_sample, unique_ec), aes(x=read
                                          legend.title=element_text(size=16,colour="black"), legend.text=element_text(size=14,colour="black"),
                                          plot.title=element_text(size=16,colour="black"))
 rarefaction_ec
+
+#Functions core domainome and enzymome##########################################################################################################################
+pfam_matrix_count = acast(pfam_count, sample~Pfam, value.var="count", fill=0)
+ec_matrix_count = acast(ec_count, sample~EC, value.var="count", fill=0)
+
+core_domainome = pfam_matrix_count[,subject_all_pfam]
+core_domainome = colMeans(core_domainome)
+core_domainome = sort(core_domainome, decreasing=TRUE)
+
+core_enzymome = ec_matrix_count[,subject_all_ec]
+core_enzymome = colMeans(core_enzymome)
+core_enzymome = sort(core_enzymome, decreasing=TRUE)
+
+write.table(core_domainome, file="blastx_core_domainome.tsv", sep="\t", col.names=FALSE, quote=FALSE)
+write.table(core_enzymome, file="blastx_core_enzymome.tsv", sep="\t", col.names=FALSE, quote=FALSE)
+
+#Unique domainome and enzymome##################################################################################################################################
+unique_domainome_sub1 = pfam_matrix_count[subject1_samples,subject1_unique_pfam]
+unique_domainome_sub1 = colMeans(unique_domainome_sub1)
+unique_domainome_sub1 = sort(unique_domainome_sub1, decreasing=TRUE)
+
+unique_domainome_sub2 = pfam_matrix_count[subject2_samples,subject2_unique_pfam]
+unique_domainome_sub2 = colMeans(unique_domainome_sub2)
+unique_domainome_sub2 = sort(unique_domainome_sub2, decreasing=TRUE)
+
+unique_domainome_sub3 = pfam_matrix_count[subject3_samples,subject3_unique_pfam]
+unique_domainome_sub3 = colMeans(unique_domainome_sub3)
+unique_domainome_sub3 = sort(unique_domainome_sub3, decreasing=TRUE)
+
+unique_domainome_sub4 = pfam_matrix_count[subject4_samples,subject4_unique_pfam]
+unique_domainome_sub4 = colMeans(unique_domainome_sub4)
+unique_domainome_sub4 = sort(unique_domainome_sub4, decreasing=TRUE)
+
+write.table(unique_domainome_sub1, file="blastx_unique_domainome_sub1.tsv", sep="\t", col.names=FALSE, quote=FALSE)
+write.table(unique_domainome_sub2, file="blastx_unique_domainome_sub2.tsv", sep="\t", col.names=FALSE, quote=FALSE)
+write.table(unique_domainome_sub3, file="blastx_unique_domainome_sub3.tsv", sep="\t", col.names=FALSE, quote=FALSE)
+write.table(unique_domainome_sub4, file="blastx_unique_domainome_sub4.tsv", sep="\t", col.names=FALSE, quote=FALSE)
+
+unique_enzymome_sub1 = ec_matrix_count[subject1_samples,subject1_unique_ec]
+unique_enzymome_sub1 = colMeans(unique_enzymome_sub1)
+unique_enzymome_sub1 = sort(unique_enzymome_sub1, decreasing=TRUE)
+
+unique_enzymome_sub2 = ec_matrix_count[subject2_samples,subject2_unique_ec]
+unique_enzymome_sub2 = colMeans(unique_enzymome_sub2)
+unique_enzymome_sub2 = sort(unique_enzymome_sub2, decreasing=TRUE)
+
+unique_enzymome_sub3 = ec_matrix_count[subject3_samples,subject3_unique_ec]
+unique_enzymome_sub3 = colMeans(unique_enzymome_sub3)
+unique_enzymome_sub3 = sort(unique_enzymome_sub3, decreasing=TRUE)
+
+unique_enzymome_sub4 = ec_matrix_count[subject4_samples,subject4_unique_ec]
+unique_enzymome_sub4 = colMeans(unique_enzymome_sub4)
+unique_enzymome_sub4 = sort(unique_enzymome_sub4, decreasing=TRUE)
+
+write.table(unique_enzymome_sub1, file="blastx_unique_enzymome_sub1.tsv", sep="\t", col.names=FALSE, quote=FALSE)
+write.table(unique_enzymome_sub2, file="blastx_unique_enzymome_sub2.tsv", sep="\t", col.names=FALSE, quote=FALSE)
+write.table(unique_enzymome_sub3, file="blastx_unique_enzymome_sub3.tsv", sep="\t", col.names=FALSE, quote=FALSE)
+write.table(unique_enzymome_sub4, file="blastx_unique_enzymome_sub4.tsv", sep="\t", col.names=FALSE, quote=FALSE)
