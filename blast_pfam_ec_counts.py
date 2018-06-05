@@ -80,9 +80,8 @@ if __name__ == "__main__":
     file_list = os.listdir(output_dir)
     for file in file_list:
         if file.startswith("NG-5"):
-            sample_id = file.split("_")
-            sample_id = "_".join(sample_id[0:2])
-            output_file = "{}_pfam.tsv".format(sample_id)
+            sample_id = file.split(".")[0]
+            output_file = "{}_ec.tsv".format(sample_id)
             file_name = "".join([output_dir, file])
             print sample_id, output_file
 
