@@ -1,5 +1,20 @@
 #! /usr/bin/evn python
 
+"""A Python script to count how many enzymes in a given KEGG pathway are present in your favourite dataset.
+
+python kegg_enzyme_counter.py <target_dir> <enzyme_count_file> <output_file>
+
+Keywords:
+target_dir --> the path to the directory containing the KEGG pathways in XML format
+enzyme_count_file --> a TSV file with the following columns: sample_id, EC_number, color_code
+output_file --> desired name of output file
+
+Returns:
+output_file --> a TSV with the following columns: pathway name, mapped_enzymes, enzymes_in_pathway
+
+"""
+
+
 import sys
 import subprocess
 import os.path
@@ -9,7 +24,7 @@ def parse_pathway_xml(dir_xml):
     dic = {}
     for file in os.listdir(dir_xml):
 	if file.endswith(".xml"):
-            tree = ET.parse(file)
+            tree = ET.parse("{}/{}".format(dir_xml, file))
             root = tree.getroot()
             dic[root.attrib["title"]] = []
             for child in root:
@@ -36,8 +51,8 @@ def count_mapped_total_enzymes(pathway_dic, ec_list):
         dic[pathway] = [len(intersection), len(pathway_dic[pathway])]
     return dic
 
-def write_tsv(count_dic):
-    with open("pathway_counts.tsv", "w") as thefile:
+def write_tsv(count_dic, output_file):
+    with open(output_file, "w") as thefile:
         line = "\t".join(["pathway", "present_enzymes", "total_enzymes"])
         thefile.write(line + "\n")
         for pathway in count_dic:
@@ -47,11 +62,12 @@ def write_tsv(count_dic):
 if __name__ == "__main__":
     target_dir = sys.argv[1]
     enzyme_count_file = sys.argv[2]
+    output_file = sys.argv[3]
 
     pathway_dic = parse_pathway_xml(target_dir)
     ec_list= parse_ec_count(enzyme_count_file)
 
     pathway_count_dic = count_mapped_total_enzymes(pathway_dic, ec_list)
 
-    write_tsv(pathway_count_dic)
+    write_tsv(pathway_count_dic, output_file)
 
