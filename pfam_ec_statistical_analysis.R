@@ -36,25 +36,25 @@ read_plot = ggplot(data=read_data_tp, aes(x=X, y=value, fill=variable)) +
             scale_y_continuous(expand=c(0,0),labels=scales::comma) +
             scale_fill_brewer(palette="Paired", name="Type of reads", breaks=c("Nonhuman.mRNA", "Human.mRNA", "rRNA", "Adaptor.and.low.quality"),
                               labels=c("Non-human mRNA", "Human mRNA", "rRNA", "Adaptor and low quality")) +
-            theme_classic() + theme(axis.title.x=element_text(size=20,colour="black"), axis.text.x=element_text(size=18,colour="black"),
-                                    axis.title.y=element_text(size=20,colour="black"), axis.text.y=element_text(size=18,colour="black"),
-                                    legend.title=element_text(size=20,colour="black"), legend.text=element_text(size=18,colour="black"),
-                                    plot.title=element_text(size=20,colour="black"))
+            theme_classic() + theme(axis.title.x=element_text(size=22,colour="black"), axis.text.x=element_text(size=20,colour="black"),
+                                    axis.title.y=element_text(size=22,colour="black"), axis.text.y=element_text(size=20,colour="black"),
+                                    legend.title=element_text(size=22,colour="black"), legend.text=element_text(size=20,colour="black"),
+                                    plot.title=element_text(size=22,colour="black"))
 read_plot
 
 ###############################domain/enzyme analyses and plots#################################################################################################
 #Load data
-setwd("/media/lottewitjes/Lotte Witjes/MSc_minor_thesis/statistical_analysis/blastx_plots_results/")
-pfam_count = read.table(file="blastx_pfam_count.tsv", sep="\t", header=FALSE)
-ec_count = read.table(file="blastx_ec_count.tsv", sep="\t", header=FALSE)
+setwd("/media/lottewitjes/Lotte Witjes/MSc_minor_thesis/statistical_analysis/blastn_metasapp_plots_results/")
+pfam_count = read.table(file="blastn_metasapp_pfam_count.tsv", sep="\t", header=FALSE)
+ec_count = read.table(file="blastn_metasapp_ec_count.tsv", sep="\t", header=FALSE)
 
 #Set column names
 colnames(pfam_count) = c("Sample", "Pfam", "Count")
 colnames(ec_count) = c("Sample", "EC", "Count")
 
 #Filter on counts
-pfam_count = pfam_count[pfam_count$Count > 5,]
-ec_count = ec_count[ec_count$Count > 5,]
+pfam_count = pfam_count[pfam_count$Count > 0,]
+ec_count = ec_count[ec_count$Count > 0,]
 
 #Specify the labels
 sample_names = c("m.s1.d3.mrn.rep", "f.s2.d1.mrn.rep", "m.s1.d1.mrn", "m.s1.d1.aft", "m.s1.d3.mrn", "m.s1.d3.aft",
@@ -86,81 +86,81 @@ diversity_df_ec = data.frame(subject, timepoints, beta_diversity_ec, alpha_diver
 diversity_df_ec = diversity_df_ec[-c(1,2),]  
 
 beta_diversity_pfam_plot = ggplot(data = diversity_df_pfam, aes(x=timepoints, y=beta_diversity_pfam, group=subject)) +
-                           geom_line(aes(color=subject), size=2) +
-                           geom_point(aes(color=subject), size=4) +
+                           geom_line(aes(color=subject), size=3) +
+                           geom_point(aes(color=subject), size=5) +
                            scale_color_manual(values=c("#a6cee3", "#b2df8a", "#1f78b4", "#33a02c")) +
                            scale_x_discrete(limits=c("Day 1, morning", "Day 1, afternoon", "Day 3, morning", "Day 3, afternoon")) +
                            xlab("Timepoints") + ylab("Beta diversity (Shannon Index)") +
                            labs(title="Pfam") +
-                           theme_classic() + theme(axis.title.x=element_text(size=20,colour="black"), axis.text.x=element_text(size=18,colour="black"),
-                                                   axis.title.y=element_text(size=20,colour="black"), axis.text.y=element_text(size=18,colour="black"),
-                                                   legend.title=element_text(size=20,colour="black"), legend.text=element_text(size=18,colour="black"),
-                                                   plot.title=element_text(size=20,colour="black"))
+                           theme_classic() + theme(axis.title.x=element_text(size=22,colour="black"), axis.text.x=element_text(size=20,colour="black"),
+                                                   axis.title.y=element_text(size=22,colour="black"), axis.text.y=element_text(size=20,colour="black"),
+                                                   legend.title=element_text(size=22,colour="black"), legend.text=element_text(size=20,colour="black"),
+                                                   plot.title=element_text(size=22,colour="black"))
 beta_diversity_pfam_plot
 
 alpha_diversity_pfam_plot = ggplot(data = diversity_df_pfam, aes(x=timepoints, y=alpha_diversity_pfam, group=subject)) +
-                            geom_line(aes(color=subject), size=2) +
-                            geom_point(aes(color=subject), size=4) +
+                            geom_line(aes(color=subject), size=3) +
+                            geom_point(aes(color=subject), size=5) +
                             scale_color_manual(values=c("#a6cee3", "#b2df8a", "#1f78b4", "#33a02c")) +
                             scale_x_discrete(limits=c("Day 1, morning", "Day 1, afternoon", "Day 3, morning", "Day 3, afternoon")) +
                             xlab("Timepoints") + ylab("Alpha diversity (Fisher)") +
                             labs(title="Pfam") +
-                            theme_classic() + theme(axis.title.x=element_text(size=20,colour="black"), axis.text.x=element_text(size=18,colour="black"),
-                                                    axis.title.y=element_text(size=20,colour="black"), axis.text.y=element_text(size=18,colour="black"),
-                                                    legend.title=element_text(size=20,colour="black"), legend.text=element_text(size=18,colour="black"),
-                                                    plot.title=element_text(size=20,colour="black"))
+                            theme_classic() + theme(axis.title.x=element_text(size=22,colour="black"), axis.text.x=element_text(size=20,colour="black"),
+                                                    axis.title.y=element_text(size=22,colour="black"), axis.text.y=element_text(size=20,colour="black"),
+                                                    legend.title=element_text(size=22,colour="black"), legend.text=element_text(size=20,colour="black"),
+                                                    plot.title=element_text(size=22,colour="black"))
 alpha_diversity_pfam_plot
 
 richness_pfam_plot = ggplot(data = diversity_df_pfam, aes(x=timepoints, y=richness_pfam, group=subject)) +
-                     geom_line(aes(color=subject), size=2) +
-                     geom_point(aes(color=subject), size=4) +
+                     geom_line(aes(color=subject), size=3) +
+                     geom_point(aes(color=subject), size=5) +
                      scale_color_manual(values=c("#a6cee3", "#b2df8a", "#1f78b4", "#33a02c")) +
                      scale_x_discrete(limits=c("Day 1, morning", "Day 1, afternoon", "Day 3, morning", "Day 3, afternoon")) +
                      xlab("Timepoints") + ylab("Richness") +
                      labs(title="Pfam") +
-                     theme_classic() + theme(axis.title.x=element_text(size=20,colour="black"), axis.text.x=element_text(size=18,colour="black"),
-                                             axis.title.y=element_text(size=20,colour="black"), axis.text.y=element_text(size=18,colour="black"),
-                                             legend.title=element_text(size=20,colour="black"), legend.text=element_text(size=18,colour="black"),
-                                             plot.title=element_text(size=20,colour="black"))
+                     theme_classic() + theme(axis.title.x=element_text(size=22,colour="black"), axis.text.x=element_text(size=20,colour="black"),
+                                             axis.title.y=element_text(size=22,colour="black"), axis.text.y=element_text(size=20,colour="black"),
+                                             legend.title=element_text(size=22,colour="black"), legend.text=element_text(size=20,colour="black"),
+                                             plot.title=element_text(size=22,colour="black"))
 richness_pfam_plot
 
 beta_diversity_ec_plot = ggplot(data = diversity_df_ec, aes(x=timepoints, y=beta_diversity_ec, group=subject)) +
-                           geom_line(aes(color=subject), size=2) +
-                           geom_point(aes(color=subject), size=4) +
+                           geom_line(aes(color=subject), size=3) +
+                           geom_point(aes(color=subject), size=5) +
                            scale_color_manual(values=c("#a6cee3", "#b2df8a", "#1f78b4", "#33a02c")) +
                            scale_x_discrete(limits=c("Day 1, morning", "Day 1, afternoon", "Day 3, morning", "Day 3, afternoon")) +
                            xlab("Timepoints") + ylab("Beta diversity (Shannon Index)") +
                            labs(title="EC") +
-                           theme_classic() + theme(axis.title.x=element_text(size=20,colour="black"), axis.text.x=element_text(size=18,colour="black"),
-                                                   axis.title.y=element_text(size=20,colour="black"), axis.text.y=element_text(size=18,colour="black"),
-                                                   legend.title=element_text(size=20,colour="black"), legend.text=element_text(size=18,colour="black"),
-                                                   plot.title=element_text(size=20,colour="black"))
+                           theme_classic() + theme(axis.title.x=element_text(size=22,colour="black"), axis.text.x=element_text(size=20,colour="black"),
+                                                   axis.title.y=element_text(size=22,colour="black"), axis.text.y=element_text(size=20,colour="black"),
+                                                   legend.title=element_text(size=22,colour="black"), legend.text=element_text(size=20,colour="black"),
+                                                   plot.title=element_text(size=22,colour="black"))
 beta_diversity_ec_plot
 
 alpha_diversity_ec_plot = ggplot(data = diversity_df_ec, aes(x=timepoints, y=alpha_diversity_ec, group=subject)) +
-                            geom_line(aes(color=subject), size=2) +
-                            geom_point(aes(color=subject), size=4) +
+                            geom_line(aes(color=subject), size=3) +
+                            geom_point(aes(color=subject), size=5) +
                             scale_color_manual(values=c("#a6cee3", "#b2df8a", "#1f78b4", "#33a02c")) +
                             scale_x_discrete(limits=c("Day 1, morning", "Day 1, afternoon", "Day 3, morning", "Day 3, afternoon")) +
                             xlab("Timepoints") + ylab("Alpha diversity (Fisher)") +
                             labs(title="EC") +
-                            theme_classic() + theme(axis.title.x=element_text(size=20,colour="black"), axis.text.x=element_text(size=18,colour="black"),
-                                                    axis.title.y=element_text(size=20,colour="black"), axis.text.y=element_text(size=18,colour="black"),
-                                                    legend.title=element_text(size=20,colour="black"), legend.text=element_text(size=18,colour="black"),
-                                                    plot.title=element_text(size=20,colour="black"))
+                            theme_classic() + theme(axis.title.x=element_text(size=22,colour="black"), axis.text.x=element_text(size=20,colour="black"),
+                                                    axis.title.y=element_text(size=22,colour="black"), axis.text.y=element_text(size=20,colour="black"),
+                                                    legend.title=element_text(size=22,colour="black"), legend.text=element_text(size=20,colour="black"),
+                                                    plot.title=element_text(size=22,colour="black"))
 alpha_diversity_ec_plot
 
 richness_ec_plot = ggplot(data = diversity_df_ec, aes(x=timepoints, y=richness_ec, group=subject)) +
-                   geom_line(aes(color=subject), size=2) +
-                   geom_point(aes(color=subject), size=4) +
+                   geom_line(aes(color=subject), size=3) +
+                   geom_point(aes(color=subject), size=5) +
                    scale_color_manual(values=c("#a6cee3", "#b2df8a", "#1f78b4", "#33a02c")) +
                    scale_x_discrete(limits=c("Day 1, morning", "Day 1, afternoon", "Day 3, morning", "Day 3, afternoon")) +
                    xlab("Timepoints") + ylab("Richness") +
                    labs(title="EC") +
-                   theme_classic() + theme(axis.title.x=element_text(size=20,colour="black"), axis.text.x=element_text(size=18,colour="black"),
-                                           axis.title.y=element_text(size=20,colour="black"), axis.text.y=element_text(size=18,colour="black"),
-                                           legend.title=element_text(size=20,colour="black"), legend.text=element_text(size=18,colour="black"),
-                                           plot.title=element_text(size=20,colour="black"))
+                   theme_classic() + theme(axis.title.x=element_text(size=22,colour="black"), axis.text.x=element_text(size=20,colour="black"),
+                                           axis.title.y=element_text(size=22,colour="black"), axis.text.y=element_text(size=20,colour="black"),
+                                           legend.title=element_text(size=22,colour="black"), legend.text=element_text(size=20,colour="black"),
+                                           plot.title=element_text(size=22,colour="black"))
 richness_ec_plot
 
 #PCA with count data############################################################################################################################################
@@ -178,10 +178,10 @@ pfam_pca_count_plot = ggplot(pfam_pca_count$x,aes(x=PC1,y=PC2,color=subject)) +
                       xlab(pfam_count_pc[1]) + ylab(pfam_count_pc[2]) +
                       labs(title="Pfam domains") +
                       scale_color_manual(values=c("#a6cee3", "#b2df8a", "#1f78b4", "#33a02c")) +
-                      theme_classic() + theme(axis.title.x=element_text(size=20,colour="black"), axis.text.x=element_text(size=18,colour="black"),
-                                              axis.title.y=element_text(size=20,colour="black"), axis.text.y=element_text(size=18,colour="black"),
-                                              legend.title=element_text(size=20,colour="black"), legend.text=element_text(size=18,colour="black"),
-                                              plot.title=element_text(size=20,colour="black"))
+                      theme_classic() + theme(axis.title.x=element_text(size=22,colour="black"), axis.text.x=element_text(size=20,colour="black"),
+                                              axis.title.y=element_text(size=22,colour="black"), axis.text.y=element_text(size=20,colour="black"),
+                                              legend.title=element_text(size=22,colour="black"), legend.text=element_text(size=20,colour="black"),
+                                              plot.title=element_text(size=22,colour="black"))
 pfam_pca_count_plot
 
 ec_pca_count_plot = ggplot(ec_pca_count$x,aes(x=PC1,y=PC2,color=subject)) +
@@ -189,10 +189,10 @@ ec_pca_count_plot = ggplot(ec_pca_count$x,aes(x=PC1,y=PC2,color=subject)) +
                     xlab(ec_count_pc[1]) + ylab(ec_count_pc[2]) +
                     labs(title="ECs") +
                     scale_color_manual(values=c("#a6cee3", "#b2df8a", "#1f78b4", "#33a02c")) +
-                    theme_classic() + theme(axis.title.x=element_text(size=20,colour="black"), axis.text.x=element_text(size=18,colour="black"),
-                                            axis.title.y=element_text(size=20,colour="black"), axis.text.y=element_text(size=18,colour="black"),
-                                            legend.title=element_text(size=20,colour="black"), legend.text=element_text(size=18,colour="black"),
-                                            plot.title=element_text(size=20,colour="black"))
+                    theme_classic() + theme(axis.title.x=element_text(size=22,colour="black"), axis.text.x=element_text(size=20,colour="black"),
+                                            axis.title.y=element_text(size=22,colour="black"), axis.text.y=element_text(size=20,colour="black"),
+                                            legend.title=element_text(size=22,colour="black"), legend.text=element_text(size=20,colour="black"),
+                                            plot.title=element_text(size=22,colour="black"))
 ec_pca_count_plot
 
 #PCA with binary data###########################################################################################################################################
@@ -216,10 +216,10 @@ pfam_pca_binary_plot = ggplot(pfam_pca_binary$x,aes(x=PC1,y=PC2,color=subject)) 
                       xlab(pfam_binary_pc[1]) + ylab(pfam_binary_pc[2]) +
                       labs(title= "Pfam domains binary") +
                       scale_colour_manual(values=c("#a6cee3", "#b2df8a", "#1f78b4", "#33a02c")) +
-                      theme_classic() + theme(axis.title.x=element_text(size=20,colour="black"), axis.text.x=element_text(size=18,colour="black"),
-                                              axis.title.y=element_text(size=20,colour="black"), axis.text.y=element_text(size=18,colour="black"),
-                                              legend.title=element_text(size=20,colour="black"), legend.text=element_text(size=18,colour="black"),
-                                              plot.title=element_text(size=20,colour="black"))
+                      theme_classic() + theme(axis.title.x=element_text(size=22,colour="black"), axis.text.x=element_text(size=20,colour="black"),
+                                              axis.title.y=element_text(size=22,colour="black"), axis.text.y=element_text(size=20,colour="black"),
+                                              legend.title=element_text(size=22,colour="black"), legend.text=element_text(size=20,colour="black"),
+                                              plot.title=element_text(size=22,colour="black"))
 pfam_pca_binary_plot
 
 ec_pca_binary_plot = ggplot(ec_pca_binary$x,aes(x=PC1,y=PC2,color=subject)) +
@@ -227,10 +227,10 @@ ec_pca_binary_plot = ggplot(ec_pca_binary$x,aes(x=PC1,y=PC2,color=subject)) +
                      xlab(ec_binary_pc[1]) + ylab(ec_binary_pc[2]) +
                      labs(title="ECs binary") +
                      scale_colour_manual(values=c("#a6cee3", "#b2df8a", "#1f78b4", "#33a02c")) +
-                     theme_classic() + theme(axis.title.x=element_text(size=20,colour="black"), axis.text.x=element_text(size=18,colour="black"),
-                                             axis.title.y=element_text(size=20,colour="black"), axis.text.y=element_text(size=18,colour="black"),
-                                             legend.title=element_text(size=20,colour="black"), legend.text=element_text(size=18,colour="black"),
-                                             plot.title=element_text(size=20,colour="black"))
+                     theme_classic() + theme(axis.title.x=element_text(size=22,colour="black"), axis.text.x=element_text(size=20,colour="black"),
+                                             axis.title.y=element_text(size=22,colour="black"), axis.text.y=element_text(size=20,colour="black"),
+                                             legend.title=element_text(size=22,colour="black"), legend.text=element_text(size=20,colour="black"),
+                                             plot.title=element_text(size=22,colour="black"))
 ec_pca_binary_plot
 
 #Hierarchical clustering with count data########################################################################################################################
@@ -242,10 +242,10 @@ plot(hc_complete_ec, main="Complete linkage, ECs", xlab="", sub="", cex=1.5)
 
 #Venn-diagram BETWEEN subjects##################################################################################################################################
 #Obtain list of domains/enzymes in each subject
-subject1_pfam = unique(pfam_count[pfam_count$Sample %in% c("NG-5450_A", "NG-5593_1A", "NG-5593_1B", "NG-5593_1C", "NG-5593_1D"),2])
-subject2_pfam = unique(pfam_count[pfam_count$Sample %in% c("NG-5450_B", "NG-5593_2A", "NG-5593_2B", "NG-5593_2C", "NG-5593_2D"),2])
-subject3_pfam = unique(pfam_count[pfam_count$Sample %in% c("NG-5593_3A", "NG-5593_3B", "NG-5593_3C", "NG-5593_3D"),2])
-subject4_pfam = unique(pfam_count[pfam_count$Sample %in% c("NG-5593_4A", "NG-5593_4B", "NG-5593_4C", "NG-5593_4D"),2])
+subject1_pfam = unique(pfam_count[pfam_count$Sample %in% c("NG-5450_A.tsv", "NG-5593_1A.tsv", "NG-5593_1B.tsv", "NG-5593_1C.tsv", "NG-5593_1D.tsv"),2])
+subject2_pfam = unique(pfam_count[pfam_count$Sample %in% c("NG-5450_B.tsv", "NG-5593_2A.tsv", "NG-5593_2B.tsv", "NG-5593_2C.tsv", "NG-5593_2D.tsv"),2])
+subject3_pfam = unique(pfam_count[pfam_count$Sample %in% c("NG-5593_3A.tsv", "NG-5593_3B.tsv", "NG-5593_3C.tsv", "NG-5593_3D.tsv"),2])
+subject4_pfam = unique(pfam_count[pfam_count$Sample %in% c("NG-5593_4A.tsv", "NG-5593_4B.tsv", "NG-5593_4C.tsv", "NG-5593_4D.tsv"),2])
 
 subject1_ec = unique(ec_count[ec_count$Sample %in% c("NG-5450_A", "NG-5593_1A", "NG-5593_1B", "NG-5593_1C", "NG-5593_1D"),2])
 subject2_ec = unique(ec_count[ec_count$Sample %in% c("NG-5450_B", "NG-5593_2A", "NG-5593_2B", "NG-5593_2C", "NG-5593_2D"),2])
@@ -394,10 +394,10 @@ rarefaction_pfam = ggplot(data=cbind(read_count_per_sample, unique_pfam), aes(x=
                    scale_x_continuous(expand=c(0,0), labels=scales::comma) +
                    scale_y_continuous(expand=c(0,0)) +
                    xlab("Number of reads") + ylab("Number of Pfams") + labs(title="Rarefaction curve Pfam") +
-                   theme_classic() + theme(axis.title.x=element_text(size=20,colour="black"), axis.text.x=element_text(size=18,colour="black"),
-                                           axis.title.y=element_text(size=20,colour="black"), axis.text.y=element_text(size=18,colour="black"),
-                                           legend.title=element_text(size=20,colour="black"), legend.text=element_text(size=18,colour="black"),
-                                           plot.title=element_text(size=20,colour="black"))
+                   theme_classic() + theme(axis.title.x=element_text(size=22,colour="black"), axis.text.x=element_text(size=20,colour="black"),
+                                           axis.title.y=element_text(size=22,colour="black"), axis.text.y=element_text(size=20,colour="black"),
+                                           legend.title=element_text(size=22,colour="black"), legend.text=element_text(size=20,colour="black"),
+                                           plot.title=element_text(size=22,colour="black"))
 rarefaction_pfam
 
 rarefaction_ec = ggplot(data=cbind(read_count_per_sample, unique_ec), aes(x=read_count_per_sample, y=unique_ec)) +
@@ -406,10 +406,10 @@ rarefaction_ec = ggplot(data=cbind(read_count_per_sample, unique_ec), aes(x=read
                  scale_x_continuous(expand=c(0,0), labels=scales::comma) +
                  scale_y_continuous(expand=c(0,0)) +
                  xlab("Number of reads") + ylab("Number of ECs") + labs(title="Rarefaction curve EC") +
-                 theme_classic() + theme(axis.title.x=element_text(size=20,colour="black"), axis.text.x=element_text(size=18,colour="black"),
-                                         axis.title.y=element_text(size=20,colour="black"), axis.text.y=element_text(size=18,colour="black"),
-                                         legend.title=element_text(size=20,colour="black"), legend.text=element_text(size=18,colour="black"),
-                                         plot.title=element_text(size=20,colour="black"))
+                 theme_classic() + theme(axis.title.x=element_text(size=22,colour="black"), axis.text.x=element_text(size=20,colour="black"),
+                                         axis.title.y=element_text(size=22,colour="black"), axis.text.y=element_text(size=20,colour="black"),
+                                         legend.title=element_text(size=22,colour="black"), legend.text=element_text(size=20,colour="black"),
+                                         plot.title=element_text(size=22,colour="black"))
 rarefaction_ec
 
 #Functions core domainome and enzymome##########################################################################################################################
@@ -421,8 +421,8 @@ core_enzymome = ec_matrix_count[,subject_all_ec]
 core_enzymome = colMeans(core_enzymome)
 core_enzymome = sort(core_enzymome, decreasing=TRUE)
 
-write.table(core_domainome, file="blastx_core_domainome.tsv", sep="\t", col.names=FALSE, quote=FALSE)
-write.table(core_enzymome, file="blastx_core_enzymome.tsv", sep="\t", col.names=FALSE, quote=FALSE)
+write.table(core_domainome, file="blastn_metasapp_core_domainome.tsv", sep="\t", col.names=FALSE, quote=FALSE)
+write.table(core_enzymome, file="blastn_metasapp_core_enzymome.tsv", sep="\t", col.names=FALSE, quote=FALSE)
 
 #Unique domainome and enzymome##################################################################################################################################
 unique_domainome_sub1 = pfam_matrix_count[subject1_samples,subject1_unique_pfam]
@@ -441,10 +441,10 @@ unique_domainome_sub4 = pfam_matrix_count[subject4_samples,subject4_unique_pfam]
 unique_domainome_sub4 = colMeans(unique_domainome_sub4)
 unique_domainome_sub4 = sort(unique_domainome_sub4, decreasing=TRUE)
 
-write.table(unique_domainome_sub1, file="blastx_unique_domainome_sub1.tsv", sep="\t", col.names=FALSE, quote=FALSE)
-write.table(unique_domainome_sub2, file="blastx_unique_domainome_sub2.tsv", sep="\t", col.names=FALSE, quote=FALSE)
-write.table(unique_domainome_sub3, file="blastx_unique_domainome_sub3.tsv", sep="\t", col.names=FALSE, quote=FALSE)
-write.table(unique_domainome_sub4, file="blastx_unique_domainome_sub4.tsv", sep="\t", col.names=FALSE, quote=FALSE)
+write.table(unique_domainome_sub1, file="blastn_metasapp_unique_domainome_sub1.tsv", sep="\t", col.names=FALSE, quote=FALSE)
+write.table(unique_domainome_sub2, file="blastn_metasapp_unique_domainome_sub2.tsv", sep="\t", col.names=FALSE, quote=FALSE)
+write.table(unique_domainome_sub3, file="blastn_metasapp_unique_domainome_sub3.tsv", sep="\t", col.names=FALSE, quote=FALSE)
+write.table(unique_domainome_sub4, file="blastn_metasapp_unique_domainome_sub4.tsv", sep="\t", col.names=FALSE, quote=FALSE)
 
 unique_enzymome_sub1 = ec_matrix_count[subject1_samples,subject1_unique_ec]
 unique_enzymome_sub1 = colMeans(unique_enzymome_sub1)
@@ -462,37 +462,63 @@ unique_enzymome_sub4 = ec_matrix_count[subject4_samples,subject4_unique_ec]
 unique_enzymome_sub4 = colMeans(unique_enzymome_sub4)
 unique_enzymome_sub4 = sort(unique_enzymome_sub4, decreasing=TRUE)
 
-write.table(unique_enzymome_sub1, file="blastx_unique_enzymome_sub1.tsv", sep="\t", col.names=FALSE, quote=FALSE)
-write.table(unique_enzymome_sub2, file="blastx_unique_enzymome_sub2.tsv", sep="\t", col.names=FALSE, quote=FALSE)
-write.table(unique_enzymome_sub3, file="blastx_unique_enzymome_sub3.tsv", sep="\t", col.names=FALSE, quote=FALSE)
-write.table(unique_enzymome_sub4, file="blastx_unique_enzymome_sub4.tsv", sep="\t", col.names=FALSE, quote=FALSE)
+write.table(unique_enzymome_sub1, file="blastn_metasapp_unique_enzymome_sub1.tsv", sep="\t", col.names=FALSE, quote=FALSE)
+write.table(unique_enzymome_sub2, file="blastn_metasapp_unique_enzymome_sub2.tsv", sep="\t", col.names=FALSE, quote=FALSE)
+write.table(unique_enzymome_sub3, file="blastn_metasapp_unique_enzymome_sub3.tsv", sep="\t", col.names=FALSE, quote=FALSE)
+write.table(unique_enzymome_sub4, file="blastn_metasapp_unique_enzymome_sub4.tsv", sep="\t", col.names=FALSE, quote=FALSE)
 
-############
-x_pfam = seq(1:50)
-y_pfam = c()
-for (i in x_pfam) {
-  percentage = (nrow(pfam_count[pfam_count$Count < i,])/nrow(pfam_count))*100
-  y_pfam = c(y_pfam, percentage)
+#Write color coded TSVs for KEGG plotting#######################################################################################################################
+colors_unique_enzymome_sub1 = cbind(rep("sub1_male", length(unique_enzymome_sub1)), names(unique_enzymome_sub1), rep("#a6cee3", length(unique_enzymome_sub1)))
+colors_unique_enzymome_sub2 = cbind(rep("sub2_female", length(unique_enzymome_sub2)), names(unique_enzymome_sub2), rep("#b2df8a", length(unique_enzymome_sub2)))
+colors_unique_enzymome_sub3 = cbind(rep("sub3_male", length(unique_enzymome_sub3)), names(unique_enzymome_sub3), rep("#1f78b4", length(unique_enzymome_sub3)))
+colors_unique_enzymome_sub4 = cbind(rep("sub4_female", length(unique_enzymome_sub4)), names(unique_enzymome_sub4), rep("#33a02c", length(unique_enzymome_sub4)))
+
+colors_core_enzymome = cbind(rep("core_enzymome", length(core_enzymome)), names(core_enzymome), rep("#ff0000", length(core_enzymome)))
+
+write.table(colors_unique_enzymome_sub1, file="blastn_metasapp_unique_enzymome_sub1_colors.tsv", sep="\t", col.names=FALSE, row.names=FALSE, quote=FALSE)
+write.table(colors_unique_enzymome_sub2, file="blastn_metasapp_unique_enzymome_sub2_colors.tsv", sep="\t", col.names=FALSE, row.names=FALSE, quote=FALSE)
+write.table(colors_unique_enzymome_sub3, file="blastn_metasapp_unique_enzymome_sub3_colors.tsv", sep="\t", col.names=FALSE, row.names=FALSE, quote=FALSE)
+write.table(colors_unique_enzymome_sub4, file="blastn_metasapp_unique_enzymome_sub4_colors.tsv", sep="\t", col.names=FALSE, row.names=FALSE, quote=FALSE)
+
+write.table(colors_core_enzymome, file="blastn_metasapp_core_enzymome_colors.tsv", sep="\t", col.names=FALSE, row.names=FALSE, quote=FALSE)
+
+#Hypergeometric test on KEGG pathways###########################################################################################################################
+setwd("/media/lottewitjes/Lotte Witjes/MSc_minor_thesis/statistical_analysis/")
+
+blastx_kegg_counts = read.table(file="blastx_plots_results/blastx_kegg_enzyme_count.tsv", sep="\t", header=TRUE)
+blastx_kegg_counts = cbind(blastx_kegg_counts, rep(641, length(nrow(blastx_kegg_counts))), rep(6202, length(nrow(blastx_kegg_counts))))
+colnames(blastx_kegg_counts) = c("pathway", "mapped_enzymes", "enzymes_in_pathway", "total_core", "total_ec")
+
+blastn_kegg_counts = read.table(file="blastn_plots_results/blastn_kegg_enzyme_count.tsv", sep="\t", header=TRUE)
+blastn_kegg_counts = cbind(blastn_kegg_counts, rep(924, length(nrow(blastn_kegg_counts))), rep(6202, length(nrow(blastn_kegg_counts))))
+colnames(blastn_kegg_counts) = colnames(blastx_kegg_counts)
+
+blastn_metasapp_kegg_counts = read.table(file="blastn_metasapp_plots_results/blastn_metasapp_kegg_enzyme_count.tsv", sep="\t", header=TRUE)
+blastn_metasapp_kegg_counts = cbind(blastn_metasapp_kegg_counts, rep(1164, length(nrow(blastn_metasapp_kegg_counts))), rep(6202, length(nrow(blastn_metasapp_kegg_counts))))
+colnames(blastn_metasapp_kegg_counts) = colnames(blastx_kegg_counts)
+
+hypgeo_kegg = function(counts) {
+  p_values = c()
+  for (row in 1:nrow(counts)) {
+    if (counts[row,2] > 0) {
+      hypgeo = dhyper(counts[row,2], counts[row,3], (counts[row,5]-counts[row,3]), counts[row,4])
+      p_values[row] = hypgeo
+    } else {p_values[row] = NA}
+  }
+  return(p_values)
 }
 
-df_pfam = cbind(x_pfam, y_pfam)
+blastx_kegg_counts = cbind(blastx_kegg_counts, hypgeo_kegg(blastx_kegg_counts))
+colnames(blastx_kegg_counts)[6] = "p_value_hypgeo"
+blastx_kegg_counts = blastx_kegg_counts[order(blastx_kegg_counts$p_value_hypgeo),]
+blastx_kegg_counts = blastx_kegg_counts[which(blastx_kegg_counts$p_value_hypgeo < 0.05),]
 
-counts_plot_pfam = ggplot(df_pfam, aes(x=x_pfam, y=y_pfam)) +
-                   geom_point() +
-                   xlab("Number of reads") + ylab("Percentage of Pfam counts")
-counts_plot_pfam
+blastn_kegg_counts = cbind(blastn_kegg_counts, hypgeo_kegg(blastn_kegg_counts))
+colnames(blastn_kegg_counts)[6] = "p_value_hypgeo"
+blastn_kegg_counts = blastn_kegg_counts[order(blastn_kegg_counts$p_value_hypgeo),]
+blastn_kegg_counts = blastn_kegg_counts[which(blastn_kegg_counts$p_value_hypgeo < 0.05),]
 
-x_ec = seq(1:50)
-y_ec = c()
-for (i in x_ec) {
-  percentage = (nrow(ec_count[ec_count$Count < i,])/nrow(ec_count))*100
-  y_ec = c(y_ec, percentage)
-}
-
-df_ec = cbind(x_ec, y_ec)
-
-counts_plot_ec = ggplot(df_ec, aes(x=x_ec, y=y_ec)) +
-                 geom_point() +
-                 xlab("Number of reads") + ylab("Percentage of EC counts")
-counts_plot_ec
-
+blastn_metasapp_kegg_counts = cbind(blastn_metasapp_kegg_counts, hypgeo_kegg(blastn_metasapp_kegg_counts))
+colnames(blastn_metasapp_kegg_counts)[6] = "p_value_hypgeo"
+blastn_metasapp_kegg_counts = blastn_metasapp_kegg_counts[order(blastn_metasapp_kegg_counts$p_value_hypgeo),]
+blastn_metasapp_kegg_counts = blastn_metasapp_kegg_counts[which(blastn_metasapp_kegg_counts$p_value_hypgeo < 0.05),]
