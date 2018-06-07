@@ -23,75 +23,98 @@ blastn_ec_count = read.table(file="blastn_plots_results/blastn_ec_count.tsv", se
 blastn_metasapp_pfam_count = read.table(file="blastn_metasapp_plots_results/blastn_metasapp_pfam_count.tsv", sep="\t", header=FALSE, stringsAsFactors=FALSE)
 blastn_metasapp_ec_count = read.table(file="blastn_metasapp_plots_results/blastn_metasapp_ec_count.tsv", sep="\t", header=FALSE, stringsAsFactors=FALSE)
 
-#Set column names
-colnames(blastx_pfam_count) = c("Sample", "Pfam", "Count")
-colnames(blastn_pfam_count) = c("Sample", "Pfam", "Count")
-colnames(blastn_metasapp_pfam_count) =c("Sample", "Pfam", "Count")
-
-colnames(blastx_ec_count) = c("Sample", "EC", "Count")
-colnames(blastn_ec_count) = c("Sample", "EC", "Count")
-colnames(blastn_metasapp_ec_count) = c("Sample", "EC", "Count")
-
-#Filter for counts
-blastx_pfam_count = blastx_pfam_count[blastx_pfam_count$Count > 0,]
-blastn_pfam_count = blastn_pfam_count[blastn_pfam_count$Count > 0,]
-blastn_metasapp_pfam_count = blastn_metasapp_pfam_count[blastn_metasapp_pfam_count$Count > 0,]
-
-blastx_ec_count = blastx_ec_count[blastx_ec_count$Count > 0,]
-blastn_ec_count = blastn_ec_count[blastn_ec_count$Count > 0,]
-blastn_metasapp_ec_count = blastn_metasapp_ec_count[blastn_metasapp_ec_count$Count > 0,]
-
-format_sample_ids = function (atable) {
+#Change the sample IDs
+format_sample_ids = function (atable,method) {
   atable[,1] = as.character(atable[,1])
   for (row in 1:nrow(atable)) {
-    elements = strsplit(toString(atable[row,1]), "_", fixed=TRUE)
-    print(elements)
-    elements = elements[[1]]
-    sample_id = sprintf("%s_%s", elements[1], elements[2])
+    sample_id = sprintf("%s_%s", atable[row,1], method)
     atable[row,1] = sample_id
   }
   return(atable)
 }
 
+blastx_pfam_count = format_sample_ids(blastx_pfam_count, "blastx")
+blastn_pfam_count = format_sample_ids(blastn_pfam_count, "blastn")
+blastn_metasapp_pfam_count = format_sample_ids(blastn_metasapp_pfam_count, "metasapp")
+blastx_ec_count = format_sample_ids(blastx_ec_count, "blastx")
+blastn_ec_count = format_sample_ids(blastn_ec_count, "blastn")
+blastn_metasapp_ec_count = format_sample_ids(blastn_metasapp_ec_count, "metasapp")
+
+#Merge the tables
+all_pfam_count = rbind(blastx_pfam_count, blastn_pfam_count, blastn_metasapp_pfam_count)
+all_ec_count = rbind(blastx_ec_count, blastn_ec_count, blastn_metasapp_ec_count)
+  
+#Set column names
+colnames(all_pfam_count) = c("Sample", "Pfam", "Count")
+colnames(all_ec_count) = c("Sample", "EC", "Count")
+
+#Filter for counts
+all_pfam_count = all_pfam_count[all_pfam_count$Count > 0,]
+all_ec_count = all_ec_count[all_ec_count$Count > 0,]
+
 #Make matrices of the count tables
-blastx_pfam_matrix_count = as.matrix(acast(blastx_pfam_count, Sample~Pfam, value.var="Count", fill=0))
-blastn_pfam_matrix_count = as.matrix(acast(blastn_pfam_count, Sample~Pfam, value.var="Count", fill=0))
-blastn_metasapp_pfam_matrix_count = as.matrix(acast(blastn_metasapp_pfam_count, Sample~Pfam, value.var="Count", fill=0))
+all_pfam_matrix_count = as.matrix(acast(all_pfam_count, Sample~Pfam, value.var="Count", fill=0))
+all_ec_matrix_count = as.matrix(acast(all_ec_count, Sample~EC, value.var="Count", fill=0))
 
-blastx_ec_matrix_count = as.matrix(acast(blastx_ec_count, Sample~EC, value.var="Count", fill=0))
-blastn_ec_matrix_count = as.matrix(acast(blastn_ec_count, Sample~EC, value.var="Count", fill=0))
-blastn_metasapp_ec_matrix_count = as.matrix(acast(blastn_metasapp_ec_count, Sample~EC, value.var="Count", fill=0))
+#Filter out Pfam domains/ECs only present in one sample to avoid conflicts with calculating variances
+remove_pfam_ec = function(amatrix){
+  alist = c()
+  for (column in 1:ncol(amatrix)) {
+    if (var(amatrix[,column]) != 0 | NA) {
+      alist[column] = colnames(amatrix)[column]
+    }
+  }
+  return(alist)
+}
 
-blastx_pfam_matrix_count = cbind(rownames(blastx_pfam_matrix_count), rep("blastx", nrow(blastx_pfam_matrix_count)), blastx_pfam_matrix_count)
-blastn_pfam_matrix_count = cbind(rownames(blastn_pfam_matrix_count), rep("blastn", nrow(blastn_pfam_matrix_count)), blastn_pfam_matrix_count)
-blastn_metasapp_pfam_matrix_count = cbind(rownames(blastn_metasapp_pfam_matrix_count), rep("blastn_metasapp", nrow(blastn_metasapp_pfam_matrix_count)), blastn_metasapp_pfam_matrix_count)
-blastx_ec_matrix_count = cbind(rownames(blastx_ec_matrix_count), rep("blastx", nrow(blastx_ec_matrix_count)), blastx_ec_matrix_count)
-blastn_ec_matrix_count = cbind(rownames(blastn_ec_matrix_count), rep("blastn", nrow(blastn_ec_matrix_count)), blastn_ec_matrix_count)
-blastn_metasapp_ec_matrix_count = cbind(rownames(blastn_metasapp_ec_matrix_count), rep("blastn_metasapp", nrow(blastn_metasapp_ec_matrix_count)), blastn_metasapp_ec_matrix_count)
+#Scale the matrix
+all_pfam_matrix_count = scale(all_pfam_matrix_count, center=FALSE, scale=TRUE)
+all_ec_matrix_count = scale(all_ec_matrix_count, center=FALSE, scale=TRUE)
 
-all_pfam_matrix_count = as.matrix(merge(blastx_pfam_matrix_count, blastn_pfam_matrix_count, all=TRUE))
-all_pfam_matrix_count = as.matrix(merge(all_pfam_matrix_count, blastn_metasapp_pfam_matrix_count, all=TRUE))
-rownames(all_pfam_matrix_count) = all_pfam_matrix_count[,1]
-all_pfam_matrix_count = all_pfam_matrix_count[,-1]
-method_names = all_pfam_matrix_count[,1]
-sample_names = rownames(all_pfam_matrix_count)
-all_pfam_matrix_count = all_pfam_matrix_count[,-1]
-storage.mode(all_pfam_matrix_count) = "numeric"
-all_pfam_matrix_count = all_pfam_matrix_count[,apply(all_pfam_matrix_count, 2, var) != NA]
 
-all_pfam_pca_count = prcomp(na.omit(all_pfam_matrix_count), center=FALSE, scale=FALSE)
+method = rep(c("blastn","blastx","metasapp"), 18)
+subject = c("1 male","1 male","1 male", 
+            "2 female","2 female","2 female", 
+            "1 male","1 male","1 male","1 male","1 male","1 male","1 male","1 male", "1 male","1 male","1 male","1 male",
+            "2 female","2 female","2 female","2 female","2 female","2 female","2 female","2 female","2 female","2 female","2 female","2 female", 
+            "3 male","3 male","3 male","3 male","3 male","3 male","3 male","3 male","3 male","3 male","3 male","3 male", 
+            "4 female","4 female","4 female","4 female","4 female","4 female","4 female","4 female","4 female","4 female","4 female","4 female")
+
+#Do the PCA for Pfam domains
+all_pfam_pca_count = prcomp(all_pfam_matrix_count, center=FALSE, scale=FALSE)
 
 all_pfam_count_percentage = round(all_pfam_pca_count$sdev / sum(all_pfam_pca_count$sdev) * 100, 2)
 
 all_pfam_count_pc = sprintf("PC%s (%s%%)", which(all_pfam_count_percentage==all_pfam_count_percentage), all_pfam_count_percentage)
 
-all_pfam_pca_count_plot = ggplot(all_pfam_pca_count$x,aes(x=PC1,y=PC2,color=rownames(all_pfam_matrix_count))) +
-  geom_point(size=5) +
-  xlab(all_pfam_count_pc[1]) + ylab(all_pfam_count_pc[2]) +
-  labs(title="Pfam domains") +
-  scale_color_manual(values=c("#a6cee3", "#b2df8a", "#1f78b4", "#33a02c")) +
-  theme_classic() + theme(axis.title.x=element_text(size=22,colour="black"), axis.text.x=element_text(size=20,colour="black"),
-                          axis.title.y=element_text(size=22,colour="black"), axis.text.y=element_text(size=20,colour="black"),
-                          legend.title=element_text(size=22,colour="black"), legend.text=element_text(size=20,colour="black"),
-                          plot.title=element_text(size=22,colour="black"))
+all_pfam_pca_count_plot = ggplot(all_pfam_pca_count$x,aes(x=PC1,y=PC2,color=subject)) +
+                          geom_point(size=5, aes(shape=method)) +
+                          xlab(all_pfam_count_pc[1]) + ylab(all_pfam_count_pc[2]) +
+                          labs(title="Pfam domains") +
+                          scale_color_manual(values=c("#a6cee3", "#b2df8a", "#1f78b4", "#33a02c")) +
+                          theme_classic() + theme(axis.title.x=element_text(size=22,colour="black"), axis.text.x=element_text(size=20,colour="black"),
+                                                  axis.title.y=element_text(size=22,colour="black"), axis.text.y=element_text(size=20,colour="black"),
+                                                  legend.title=element_text(size=22,colour="black"), legend.text=element_text(size=20,colour="black"),
+                                                  plot.title=element_text(size=22,colour="black"))
 all_pfam_pca_count_plot
+
+#Do the PCA for EC numbers
+all_ec_pca_count = prcomp(all_ec_matrix_count, center=FALSE, scale=FALSE)
+
+all_ec_count_percentage = round(all_ec_pca_count$sdev / sum(all_ec_pca_count$sdev) * 100, 2)
+
+all_ec_count_pc = sprintf("PC%s (%s%%)", which(all_ec_count_percentage==all_ec_count_percentage), all_ec_count_percentage)
+
+all_ec_pca_count_plot = ggplot(all_ec_pca_count$x,aes(x=PC1,y=PC2,color=subject)) +
+                        geom_point(size=5, aes(shape=method)) +
+                        xlab(all_ec_count_pc[1]) + ylab(all_ec_count_pc[2]) +
+                        labs(title="ECs") +
+                        scale_color_manual(values=c("#a6cee3", "#b2df8a", "#1f78b4", "#33a02c")) +
+                        theme_classic() + theme(axis.title.x=element_text(size=22,colour="black"), axis.text.x=element_text(size=20,colour="black"),
+                                                axis.title.y=element_text(size=22,colour="black"), axis.text.y=element_text(size=20,colour="black"),
+                                                legend.title=element_text(size=22,colour="black"), legend.text=element_text(size=20,colour="black"),
+                                                plot.title=element_text(size=22,colour="black"))
+all_ec_pca_count_plot
+
+
+
