@@ -11,7 +11,8 @@ library(dendextend)
 
 #PCA of three methods together###################################################################################################################################
 #Set working directory
-setwd("/media/lottewitjes/Lotte Witjes/MSc_minor_thesis/statistical_analysis/")
+#setwd("/media/lottewitjes/Lotte Witjes/MSc_minor_thesis/statistical_analysis/") #Linux
+setwd("D:/MSc_minor_thesis/statistical_analysis/") #Windows
 
 #Load the count tables
 blastx_pfam_count = read.table(file="blastx_plots_results/blastx_pfam_count.tsv", sep="\t", header=FALSE, stringsAsFactors=FALSE)
@@ -87,11 +88,11 @@ all_pfam_count_percentage = round(all_pfam_pca_count$sdev / sum(all_pfam_pca_cou
 
 all_pfam_count_pc = sprintf("PC%s (%s%%)", which(all_pfam_count_percentage==all_pfam_count_percentage), all_pfam_count_percentage)
 
-all_pfam_pca_count_plot = ggplot(all_pfam_pca_count$x,aes(x=PC1,y=PC2,color=subject)) +
-                          geom_point(size=5, aes(shape=method)) +
+all_pfam_pca_count_plot = ggplot(all_pfam_pca_count$x,aes(x=PC1,y=PC2,color=method)) +
+                          geom_point(size=5) +
                           xlab(all_pfam_count_pc[1]) + ylab(all_pfam_count_pc[2]) +
                           labs(title="Pfam domains") +
-                          scale_color_manual(values=c("#a6cee3", "#b2df8a", "#1f78b4", "#33a02c")) +
+                          scale_color_manual(values=c("#34B233", "#FF7900", "#005172")) +
                           theme_classic() + theme(axis.title.x=element_text(size=22,colour="black"), axis.text.x=element_text(size=20,colour="black"),
                                                   axis.title.y=element_text(size=22,colour="black"), axis.text.y=element_text(size=20,colour="black"),
                                                   legend.title=element_text(size=22,colour="black"), legend.text=element_text(size=20,colour="black"),
@@ -105,16 +106,63 @@ all_ec_count_percentage = round(all_ec_pca_count$sdev / sum(all_ec_pca_count$sde
 
 all_ec_count_pc = sprintf("PC%s (%s%%)", which(all_ec_count_percentage==all_ec_count_percentage), all_ec_count_percentage)
 
-all_ec_pca_count_plot = ggplot(all_ec_pca_count$x,aes(x=PC1,y=PC2,color=subject)) +
-                        geom_point(size=5, aes(shape=method)) +
+all_ec_pca_count_plot = ggplot(all_ec_pca_count$x,aes(x=PC1,y=PC2,color=method)) +
+                        geom_point(size=5) +
                         xlab(all_ec_count_pc[1]) + ylab(all_ec_count_pc[2]) +
                         labs(title="ECs") +
-                        scale_color_manual(values=c("#a6cee3", "#b2df8a", "#1f78b4", "#33a02c")) +
+                        scale_color_manual(values=c("#34B233", "#FF7900", "#005172")) +
                         theme_classic() + theme(axis.title.x=element_text(size=22,colour="black"), axis.text.x=element_text(size=20,colour="black"),
                                                 axis.title.y=element_text(size=22,colour="black"), axis.text.y=element_text(size=20,colour="black"),
                                                 legend.title=element_text(size=22,colour="black"), legend.text=element_text(size=20,colour="black"),
                                                 plot.title=element_text(size=22,colour="black"))
 all_ec_pca_count_plot
 
+#Make a Venn-diagram of the three methods
+blastx_pfam = unique(all_pfam_count[grep("blastx", all_pfam_count$Sample, fixed=TRUE),2])
+blastn_pfam = unique(all_pfam_count[grep("blastn", all_pfam_count$Sample, fixed=TRUE),2])
+metasapp_pfam = unique(all_pfam_count[grep("metasapp", all_pfam_count$Sample, fixed=TRUE),2])
 
+blastx_ec = unique(all_ec_count[grep("blastx", all_ec_count$Sample, fixed=TRUE),2])
+blastn_ec = unique(all_ec_count[grep("blastn", all_ec_count$Sample, fixed=TRUE),2])
+metasapp_ec = unique(all_ec_count[grep("metasapp", all_ec_count$Sample, fixed=TRUE),2])
+
+method_all_pfam = Reduce(intersect, list(blastx_pfam, blastn_pfam, metasapp_pfam)) #core domains
+blastx_blastn_pfam = intersect(blastx_pfam, blastn_pfam)
+blastx_metasapp_pfam = intersect(blastx_pfam, metasapp_pfam)
+blastn_metasapp_pfam = intersect(blastn_pfam, metasapp_pfam)
+
+method_all_ec = Reduce(intersect, list(blastx_ec, blastn_ec, metasapp_ec)) #core domains
+blastx_blastn_ec = intersect(blastx_ec, blastn_ec)
+blastx_metasapp_ec = intersect(blastx_ec, metasapp_ec)
+blastn_metasapp_ec = intersect(blastn_ec, metasapp_ec)
+
+blastx_unique_pfam = Reduce(setdiff, list(blastx_pfam, blastx_blastn_pfam, blastx_metasapp_pfam))
+blastn_unique_pfam = Reduce(setdiff, list(blastn_pfam, blastn_metasapp_pfam, blastx_blastn_pfam))
+metasapp_unique_pfam = Reduce(setdiff, list(blastn_metasapp_pfam, blastn_metasapp_pfam, blastx_metasapp_pfam))
+
+blastx_unique_ec = Reduce(setdiff, list(blastx_ec, blastx_blastn_ec, blastx_metasapp_ec))
+blastn_unique_ec = Reduce(setdiff, list(blastn_ec, blastn_metasapp_ec, blastx_blastn_ec))
+metasapp_unique_ec = Reduce(setdiff, list(blastn_metasapp_ec, blastn_metasapp_ec, blastx_metasapp_ec))
+
+grid.newpage()
+venn_pfam = draw.triple.venn(area1=length(blastx_pfam), area2=length(blastn_pfam),
+                           area3=length(metasapp_pfam),
+                           n12=length(blastx_blastn_pfam), n13=length(blastx_metasapp_pfam),
+                           n23=length(blastn_metasapp_pfam), n123=length(method_all_pfam),
+                           category=c("BLASTX", "BLASTN", "MetaSAPP"),
+                           fill=c("#34B233", "#FF7900", "#005172"),
+                           cex=1.5, cat.cex=1.5)
+grid.text("Pfam domains", vjust=-23, gp=gpar(fontfamily="serif",cex=2))
+
+grid.newpage()
+venn_ec = draw.triple.venn(area1=length(blastx_ec), area2=length(blastn_ec),
+                             area3=length(metasapp_ec),
+                             n12=length(blastx_blastn_ec), n13=length(blastx_metasapp_ec),
+                             n23=length(blastn_metasapp_ec), n123=length(method_all_ec),
+                             category=c("BLASTX", "BLASTN", "MetaSAPP"),
+                             fill=c("#34B233", "#FF7900", "#005172"),
+                             cex=1.5, cat.cex=1.5)
+grid.text("ECs", vjust=-23, gp=gpar(fontfamily="serif",cex=2))
+
+#Make a rarefaction plot with three lines
 
