@@ -36,17 +36,17 @@ read_plot = ggplot(data=read_data_tp, aes(x=X, y=value, fill=variable)) +
             scale_y_continuous(expand=c(0,0),labels=scales::comma) +
             scale_fill_brewer(palette="Paired", name="Type of reads", breaks=c("Nonhuman.mRNA", "Human.mRNA", "rRNA", "Adaptor.and.low.quality"),
                               labels=c("Non-human mRNA", "Human mRNA", "rRNA", "Adaptor and low quality")) +
-            theme_classic() + theme(axis.title.x=element_text(size=22,colour="black"), axis.text.x=element_text(size=20,colour="black"),
-                                    axis.title.y=element_text(size=22,colour="black"), axis.text.y=element_text(size=20,colour="black"),
-                                    legend.title=element_text(size=22,colour="black"), legend.text=element_text(size=20,colour="black"),
-                                    plot.title=element_text(size=22,colour="black"))
+            theme_classic() + theme(axis.title.x=element_text(size=24,colour="black"), axis.text.x=element_text(size=22,colour="black"),
+                                    axis.title.y=element_text(size=24,colour="black"), axis.text.y=element_text(size=22,colour="black"),
+                                    legend.title=element_text(size=24,colour="black"), legend.text=element_text(size=22,colour="black"),
+                                    plot.title=element_text(size=24,colour="black"))
 read_plot
 
 ###############################domain/enzyme analyses and plots#################################################################################################
 #Load data
-setwd("/media/lottewitjes/Lotte Witjes/MSc_minor_thesis/statistical_analysis/blastn_metasapp_plots_results/")
-pfam_count = read.table(file="blastn_metasapp_pfam_count.tsv", sep="\t", header=FALSE)
-ec_count = read.table(file="blastn_metasapp_ec_count.tsv", sep="\t", header=FALSE)
+setwd("/media/lottewitjes/Lotte Witjes/MSc_minor_thesis/statistical_analysis/blastn_plots_results/")
+pfam_count = read.table(file="blastn_pfam_count.tsv", sep="\t", header=FALSE)
+ec_count = read.table(file="blastn_ec_count.tsv", sep="\t", header=FALSE)
 
 #Set column names
 colnames(pfam_count) = c("Sample", "Pfam", "Count")
@@ -68,15 +68,15 @@ pfam_matrix_count = as.matrix(acast(pfam_count, Sample~Pfam, value.var="Count", 
 ec_matrix_count = as.matrix(acast(ec_count, Sample~EC, value.var="Count", fill=0))
 
 #Scale the matrices
-pfam_matrix_count = scale(pfam_matrix_count, center=FALSE, scale=TRUE)
-ec_matrix_count = scale(ec_matrix_count, center=FALSE, scale=TRUE)
+pfam_matrix_count_scaled = scale(pfam_matrix_count, center=FALSE, scale=TRUE)
+ec_matrix_count_scaled = scale(ec_matrix_count, center=FALSE, scale=TRUE)
 
 #Domain/enzyme alpha/beta/gamma diversity#######################################################################################################################
-beta_diversity_pfam = diversity(pfam_matrix_count, index="shannon")
+beta_diversity_pfam = diversity(pfam_matrix_count_scaled, index="shannon")
 alpha_diversity_pfam = fisher.alpha(pfam_matrix_count)
 richness_pfam = specnumber(pfam_matrix_count)
 
-beta_diversity_ec = diversity(ec_matrix_count, index="shannon") #beta diversity is a measure for similarity and overlap between samples of distributions
+beta_diversity_ec = diversity(ec_matrix_count_scaled, index="shannon") #beta diversity is a measure for similarity and overlap between samples of distributions
 alpha_diversity_ec = fisher.alpha(ec_matrix_count) #alpha diversity is average diversity within community
 richness_ec = specnumber(ec_matrix_count) #species richness is simple species count
 
@@ -167,8 +167,8 @@ richness_ec_plot = ggplot(data = diversity_df_ec, aes(x=timepoints, y=richness_e
 richness_ec_plot
 
 #PCA with count data############################################################################################################################################
-pfam_pca_count = prcomp(pfam_matrix_count, center=FALSE, scale=FALSE)
-ec_pca_count = prcomp(ec_matrix_count, center=FALSE, scale=FALSE)
+pfam_pca_count = prcomp(pfam_matrix_count_scaled, center=FALSE, scale=FALSE)
+ec_pca_count = prcomp(ec_matrix_count_scaled, center=FALSE, scale=FALSE)
 
 pfam_count_percentage = round(pfam_pca_count$sdev / sum(pfam_pca_count$sdev) * 100, 2)
 ec_count_percentage = round(ec_pca_count$sdev / sum(ec_pca_count$sdev) * 100, 2)
@@ -245,10 +245,10 @@ plot(hc_complete_ec, main="Complete linkage, ECs", xlab="", sub="", cex=1.5)
 
 #Venn-diagram BETWEEN subjects##################################################################################################################################
 #Obtain list of domains/enzymes in each subject
-subject1_pfam = unique(pfam_count[pfam_count$Sample %in% c("NG-5450_A.tsv", "NG-5593_1A.tsv", "NG-5593_1B.tsv", "NG-5593_1C.tsv", "NG-5593_1D.tsv"),2])
-subject2_pfam = unique(pfam_count[pfam_count$Sample %in% c("NG-5450_B.tsv", "NG-5593_2A.tsv", "NG-5593_2B.tsv", "NG-5593_2C.tsv", "NG-5593_2D.tsv"),2])
-subject3_pfam = unique(pfam_count[pfam_count$Sample %in% c("NG-5593_3A.tsv", "NG-5593_3B.tsv", "NG-5593_3C.tsv", "NG-5593_3D.tsv"),2])
-subject4_pfam = unique(pfam_count[pfam_count$Sample %in% c("NG-5593_4A.tsv", "NG-5593_4B.tsv", "NG-5593_4C.tsv", "NG-5593_4D.tsv"),2])
+subject1_pfam = unique(pfam_count[pfam_count$Sample %in% c("NG-5450_A", "NG-5593_1A", "NG-5593_1B", "NG-5593_1C", "NG-5593_1D"),2])
+subject2_pfam = unique(pfam_count[pfam_count$Sample %in% c("NG-5450_B", "NG-5593_2A", "NG-5593_2B", "NG-5593_2C", "NG-5593_2D"),2])
+subject3_pfam = unique(pfam_count[pfam_count$Sample %in% c("NG-5593_3A", "NG-5593_3B", "NG-5593_3C", "NG-5593_3D"),2])
+subject4_pfam = unique(pfam_count[pfam_count$Sample %in% c("NG-5593_4A", "NG-5593_4B", "NG-5593_4C", "NG-5593_4D"),2])
 
 subject1_ec = unique(ec_count[ec_count$Sample %in% c("NG-5450_A", "NG-5593_1A", "NG-5593_1B", "NG-5593_1C", "NG-5593_1D"),2])
 subject2_ec = unique(ec_count[ec_count$Sample %in% c("NG-5450_B", "NG-5593_2A", "NG-5593_2B", "NG-5593_2C", "NG-5593_2D"),2])
@@ -311,7 +311,7 @@ venn_pfam = draw.quad.venn(area1=length(subject1_pfam), area2=length(subject2_pf
                category=c("Subject 1 male", "Subject 2 female", 
                           "Subject 3 male", "Subject 4 female"),
                fill=c("#a6cee3", "#b2df8a", "#1f78b4", "#33a02c"),
-               cex=1.5, cat.cex=1.5)
+               cex=2.2, cat.cex=2.2)
 grid.text("Pfam domains", vjust=-23, gp=gpar(fontfamily="serif",cex=2))
 
 grid.newpage()
@@ -326,7 +326,7 @@ venn_ec = draw.quad.venn(area1=length(subject1_ec), area2=length(subject2_ec),
                          category=c("Subject 1 male", "Subject 2 female", 
                                     "Subject 3 male", "Subject 4 female"),
                          fill=c("#a6cee3", "#b2df8a", "#1f78b4", "#33a02c"),
-                         cex=1.5, cat.cex=1.5)
+                         cex=2.2, cat.cex=2.2)
 grid.text("ECs", vjust=-23, gp=gpar(fontfamily="serif",cex=2))
 
 #Venn-diagram WITHIN subjects###################################################################################################################################
@@ -363,7 +363,7 @@ within_subjects_venn = function(subject_id, samples, pfam_ec_count) {
                              category=c("Day 1, morning", "Day 1, afternoon", 
                                         "Day 3 morning", "Day 3, afternoon"),
                              fill=c("#a6cee3", "#b2df8a", "#1f78b4", "#33a02c"),
-                             cex=1.5, cat.cex=1.5)
+                             cex=2.2, cat.cex=2.2)
   grid.text(subject_id, vjust=-23, gp=gpar(fontfamily="serif",cex=2))
 }
 
@@ -397,10 +397,10 @@ rarefaction_pfam = ggplot(data=cbind(read_count_per_sample, unique_pfam), aes(x=
                    scale_x_continuous(expand=c(0,0), labels=scales::comma) +
                    scale_y_continuous(expand=c(0,0)) +
                    xlab("Number of reads") + ylab("Number of Pfams") + labs(title="Rarefaction curve Pfam") +
-                   theme_classic() + theme(axis.title.x=element_text(size=22,colour="black"), axis.text.x=element_text(size=20,colour="black"),
-                                           axis.title.y=element_text(size=22,colour="black"), axis.text.y=element_text(size=20,colour="black"),
-                                           legend.title=element_text(size=22,colour="black"), legend.text=element_text(size=20,colour="black"),
-                                           plot.title=element_text(size=22,colour="black"))
+                   theme_classic() + theme(axis.title.x=element_text(size=24,colour="black"), axis.text.x=element_text(size=22,colour="black"),
+                                           axis.title.y=element_text(size=24,colour="black"), axis.text.y=element_text(size=22,colour="black"),
+                                           legend.title=element_text(size=24,colour="black"), legend.text=element_text(size=22,colour="black"),
+                                           plot.title=element_text(size=24,colour="black"))
 rarefaction_pfam
 
 rarefaction_ec = ggplot(data=cbind(read_count_per_sample, unique_ec), aes(x=read_count_per_sample, y=unique_ec)) +
@@ -409,10 +409,10 @@ rarefaction_ec = ggplot(data=cbind(read_count_per_sample, unique_ec), aes(x=read
                  scale_x_continuous(expand=c(0,0), labels=scales::comma) +
                  scale_y_continuous(expand=c(0,0)) +
                  xlab("Number of reads") + ylab("Number of ECs") + labs(title="Rarefaction curve EC") +
-                 theme_classic() + theme(axis.title.x=element_text(size=22,colour="black"), axis.text.x=element_text(size=20,colour="black"),
-                                         axis.title.y=element_text(size=22,colour="black"), axis.text.y=element_text(size=20,colour="black"),
-                                         legend.title=element_text(size=22,colour="black"), legend.text=element_text(size=20,colour="black"),
-                                         plot.title=element_text(size=22,colour="black"))
+                 theme_classic() + theme(axis.title.x=element_text(size=24,colour="black"), axis.text.x=element_text(size=22,colour="black"),
+                                         axis.title.y=element_text(size=24,colour="black"), axis.text.y=element_text(size=22,colour="black"),
+                                         legend.title=element_text(size=24,colour="black"), legend.text=element_text(size=22,colour="black"),
+                                         plot.title=element_text(size=24,colour="black"))
 rarefaction_ec
 
 #Functions core domainome and enzymome##########################################################################################################################
@@ -424,8 +424,8 @@ core_enzymome = ec_matrix_count[,subject_all_ec]
 core_enzymome = colMeans(core_enzymome)
 core_enzymome = sort(core_enzymome, decreasing=TRUE)
 
-write.table(core_domainome, file="blastn_metasapp_core_domainome.tsv", sep="\t", col.names=FALSE, quote=FALSE)
-write.table(core_enzymome, file="blastn_metasapp_core_enzymome.tsv", sep="\t", col.names=FALSE, quote=FALSE)
+write.table(core_domainome, file="blastn_core_domainome.tsv", sep="\t", col.names=FALSE, quote=FALSE)
+write.table(core_enzymome, file="blastn_core_enzymome.tsv", sep="\t", col.names=FALSE, quote=FALSE)
 
 #Unique domainome and enzymome##################################################################################################################################
 unique_domainome_sub1 = pfam_matrix_count[subject1_samples,subject1_unique_pfam]
@@ -444,10 +444,10 @@ unique_domainome_sub4 = pfam_matrix_count[subject4_samples,subject4_unique_pfam]
 unique_domainome_sub4 = colMeans(unique_domainome_sub4)
 unique_domainome_sub4 = sort(unique_domainome_sub4, decreasing=TRUE)
 
-write.table(unique_domainome_sub1, file="blastn_metasapp_unique_domainome_sub1.tsv", sep="\t", col.names=FALSE, quote=FALSE)
-write.table(unique_domainome_sub2, file="blastn_metasapp_unique_domainome_sub2.tsv", sep="\t", col.names=FALSE, quote=FALSE)
-write.table(unique_domainome_sub3, file="blastn_metasapp_unique_domainome_sub3.tsv", sep="\t", col.names=FALSE, quote=FALSE)
-write.table(unique_domainome_sub4, file="blastn_metasapp_unique_domainome_sub4.tsv", sep="\t", col.names=FALSE, quote=FALSE)
+write.table(unique_domainome_sub1, file="blastn_unique_domainome_sub1.tsv", sep="\t", col.names=FALSE, quote=FALSE)
+write.table(unique_domainome_sub2, file="blastn_unique_domainome_sub2.tsv", sep="\t", col.names=FALSE, quote=FALSE)
+write.table(unique_domainome_sub3, file="blastn_unique_domainome_sub3.tsv", sep="\t", col.names=FALSE, quote=FALSE)
+write.table(unique_domainome_sub4, file="blastn_unique_domainome_sub4.tsv", sep="\t", col.names=FALSE, quote=FALSE)
 
 unique_enzymome_sub1 = ec_matrix_count[subject1_samples,subject1_unique_ec]
 unique_enzymome_sub1 = colMeans(unique_enzymome_sub1)
@@ -465,10 +465,10 @@ unique_enzymome_sub4 = ec_matrix_count[subject4_samples,subject4_unique_ec]
 unique_enzymome_sub4 = colMeans(unique_enzymome_sub4)
 unique_enzymome_sub4 = sort(unique_enzymome_sub4, decreasing=TRUE)
 
-write.table(unique_enzymome_sub1, file="blastn_metasapp_unique_enzymome_sub1.tsv", sep="\t", col.names=FALSE, quote=FALSE)
-write.table(unique_enzymome_sub2, file="blastn_metasapp_unique_enzymome_sub2.tsv", sep="\t", col.names=FALSE, quote=FALSE)
-write.table(unique_enzymome_sub3, file="blastn_metasapp_unique_enzymome_sub3.tsv", sep="\t", col.names=FALSE, quote=FALSE)
-write.table(unique_enzymome_sub4, file="blastn_metasapp_unique_enzymome_sub4.tsv", sep="\t", col.names=FALSE, quote=FALSE)
+write.table(unique_enzymome_sub1, file="blastn_unique_enzymome_sub1.tsv", sep="\t", col.names=FALSE, quote=FALSE)
+write.table(unique_enzymome_sub2, file="blastn_unique_enzymome_sub2.tsv", sep="\t", col.names=FALSE, quote=FALSE)
+write.table(unique_enzymome_sub3, file="blastn_unique_enzymome_sub3.tsv", sep="\t", col.names=FALSE, quote=FALSE)
+write.table(unique_enzymome_sub4, file="blastn_unique_enzymome_sub4.tsv", sep="\t", col.names=FALSE, quote=FALSE)
 
 #Write color coded TSVs for KEGG plotting#######################################################################################################################
 colors_unique_enzymome_sub1 = cbind(rep("sub1_male", length(unique_enzymome_sub1)), names(unique_enzymome_sub1), rep("#a6cee3", length(unique_enzymome_sub1)))
@@ -478,9 +478,10 @@ colors_unique_enzymome_sub4 = cbind(rep("sub4_female", length(unique_enzymome_su
 
 colors_core_enzymome = cbind(rep("core_enzymome", length(core_enzymome)), names(core_enzymome), rep("#ff0000", length(core_enzymome)))
 
-write.table(colors_unique_enzymome_sub1, file="blastn_metasapp_unique_enzymome_sub1_colors.tsv", sep="\t", col.names=FALSE, row.names=FALSE, quote=FALSE)
-write.table(colors_unique_enzymome_sub2, file="blastn_metasapp_unique_enzymome_sub2_colors.tsv", sep="\t", col.names=FALSE, row.names=FALSE, quote=FALSE)
-write.table(colors_unique_enzymome_sub3, file="blastn_metasapp_unique_enzymome_sub3_colors.tsv", sep="\t", col.names=FALSE, row.names=FALSE, quote=FALSE)
-write.table(colors_unique_enzymome_sub4, file="blastn_metasapp_unique_enzymome_sub4_colors.tsv", sep="\t", col.names=FALSE, row.names=FALSE, quote=FALSE)
+write.table(colors_unique_enzymome_sub1, file="blastn_unique_enzymome_sub1_colors.tsv", sep="\t", col.names=FALSE, row.names=FALSE, quote=FALSE)
+write.table(colors_unique_enzymome_sub2, file="blastn_unique_enzymome_sub2_colors.tsv", sep="\t", col.names=FALSE, row.names=FALSE, quote=FALSE)
+write.table(colors_unique_enzymome_sub3, file="blastn_unique_enzymome_sub3_colors.tsv", sep="\t", col.names=FALSE, row.names=FALSE, quote=FALSE)
+write.table(colors_unique_enzymome_sub4, file="blastn_unique_enzymome_sub4_colors.tsv", sep="\t", col.names=FALSE, row.names=FALSE, quote=FALSE)
 
-write.table(colors_core_enzymome, file="blastn_metasapp_core_enzymome_colors.tsv", sep="\t", col.names=FALSE, row.names=FALSE, quote=FALSE)
+write.table(colors_core_enzymome, file="blastn_core_enzymome_colors.tsv", sep="\t", col.names=FALSE, row.names=FALSE, quote=FALSE)
+
