@@ -13,8 +13,6 @@ Returns:
 output_file --> a TSV with the following columns: pathway name, mapped_enzymes, enzymes_in_pathway
 
 """
-
-
 import sys
 import subprocess
 import os.path
@@ -30,8 +28,13 @@ def parse_pathway_xml(dir_xml):
             for child in root:
 	        if child.tag == "entry":
                     if child.attrib["name"].startswith("ec"):
-                        enzyme = child.attrib["name"].strip("ec:")
-	                dic[root.attrib["title"]].append(enzyme)
+                        enzyme_name = child.attrib["name"].strip("ec:")
+			if "ec:" in enzyme_name:
+			    enzymes = enzyme_name.split(" ")
+			    enzymes = [enzyme.strip("ec:") for enzyme in enzymes]
+			    dic[root.attrib["title"]].extend(enzymes)
+			else:
+	                    dic[root.attrib["title"]].append(enzyme_name)
     return dic
 
 def parse_ec_count(ec_file):
@@ -65,9 +68,17 @@ if __name__ == "__main__":
     output_file = sys.argv[3]
 
     pathway_dic = parse_pathway_xml(target_dir)
+
     ec_list= parse_ec_count(enzyme_count_file)
 
     pathway_count_dic = count_mapped_total_enzymes(pathway_dic, ec_list)
 
     write_tsv(pathway_count_dic, output_file)
+
+    kegg_enzymes = set()
+    for pathway in pathway_dic:
+	unique_enzymes = set(pathway_dic[pathway])
+	kegg_enzymes = kegg_enzymes.union(unique_enzymes)
+    print kegg_enzymes
+    print len(kegg_enzymes)
 
