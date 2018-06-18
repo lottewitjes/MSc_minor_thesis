@@ -19,17 +19,20 @@ import os.path
 
 def parse_pfam2go(pfam2go_mapping):
     dic = {}
+    go_description = {}
     with open(pfam2go_mapping, "r") as thefile:
         for line in thefile:
             if not line.startswith("!"):
                 pfam, go_term = line.strip().split(">")
                 pfam = pfam.split("Pfam:")[1].split(" ")[0]
-                go_term = go_term.split(";")[1].strip()
+                description, go_term = go_term.split(";")
                 if pfam in dic:
                     dic[pfam].append(go_term)
                 else:
                     dic[pfam] = [go_term]
-    return dic
+                if not go_term in go_description:
+                    go_description[go_term] = description
+    return dic, go_description
 
 def go_counter(pfam2go_dic, pfam_counts):
     dic = {}
@@ -44,7 +47,7 @@ def go_counter(pfam2go_dic, pfam_counts):
                         dic[go_term] = 1
     return dic
 
-def count_writer(go_count_dic, go_counts):
+def count_writer(go_count_dic, go_description, go_counts):
     alist = []
     for key in go_count_dic:
         go_count = [key, go_count_dic[key]]
@@ -52,7 +55,7 @@ def count_writer(go_count_dic, go_counts):
     alist.sort(key=lambda x: x[1], reverse=True)
     with open(go_counts, "w") as thefile:
         for element in alist:
-            line = "\t".join([element[0], element[1]])
+            line = "\t".join([element[0], go_description[element[0]], str(element[1])])
             thefile.write(line + "\n")
 
 if __name__ == "__main__":
@@ -60,8 +63,8 @@ if __name__ == "__main__":
     pfam_counts = sys.argv[2]
     go_counts = sys.argv[3]
 
-    pfam2go_dic = parse_pfam2go(pfam2go)
+    pfam2go_dic, go_description = parse_pfam2go(pfam2go)
 
     go_count_dic = go_counter(pfam2go_dic, pfam_counts)
 
-    count_writer(go_count_dic, go_counts)
+    count_writer(go_count_dic, go_description, go_counts)
