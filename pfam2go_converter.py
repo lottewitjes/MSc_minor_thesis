@@ -36,7 +36,13 @@ def go_counter(pfam2go_dic, pfam_counts):
     with open(pfam_counts, "r") as thefile:
         for line in thefile:
             pfam = line.strip().split("\t")[0]
-            
+            if pfam in pfam2go_dic:
+                for go_term in pfam2go_dic[pfam]:
+                    if go_term in dic:
+                        dic[go_term] += 1
+                    else:
+                        dic[go_term] = 1
+    return dic
 
 if __name__ == "__main__":
     pfam2go = sys.argv[1]
@@ -46,4 +52,4 @@ if __name__ == "__main__":
     pfam2go_dic = parse_pfam2go(pfam2go)
 
     go_count_dic = go_counter(pfam2go_dic, pfam_counts)
-
+    print go_count_dic
