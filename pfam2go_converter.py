@@ -44,6 +44,17 @@ def go_counter(pfam2go_dic, pfam_counts):
                         dic[go_term] = 1
     return dic
 
+def count_writer(go_count_dic, go_counts):
+    alist = []
+    for key in go_count_dic:
+        go_count = [key, go_count_dic[key]]
+        alist.append(go_count)
+    alist.sort(key=lambda x: x[1], reverse=True)
+    with open(go_counts, "w") as thefile:
+        for element in alist:
+            line = "\t".join([element[0], element[1]])
+            thefile.write(line + "\n")
+
 if __name__ == "__main__":
     pfam2go = sys.argv[1]
     pfam_counts = sys.argv[2]
@@ -52,4 +63,5 @@ if __name__ == "__main__":
     pfam2go_dic = parse_pfam2go(pfam2go)
 
     go_count_dic = go_counter(pfam2go_dic, pfam_counts)
-    print go_count_dic
+
+    count_writer(go_count_dic, go_counts)
