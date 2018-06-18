@@ -51,7 +51,7 @@ def count_mapped_total_enzymes(pathway_dic, ec_list):
         set1 = set(pathway_dic[pathway])
         set2 = set(ec_list)
         intersection = set1.intersection(set2)
-        dic[pathway] = [len(intersection), len(pathway_dic[pathway])]
+        dic[pathway] = [len(intersection), len(set1)] #len(pathway_dic[pathway])]
     return dic
 
 def write_tsv(count_dic, output_file):
