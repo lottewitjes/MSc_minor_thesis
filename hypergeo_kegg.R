@@ -10,19 +10,12 @@ library(vegan)
 library(dendextend)
 
 #Hypergeometric test on KEGG pathways###########################################################################################################################
-setwd("/media/lottewitjes/Lotte Witjes/MSc_minor_thesis/statistical_analysis/")
-
-blastx_kegg_counts = read.table(file="blastx_plots_results/blastx_kegg_enzyme_count.tsv", sep="\t", header=TRUE)
-blastx_kegg_counts = cbind(blastx_kegg_counts, rep(641, length(nrow(blastx_kegg_counts))), rep(ncol(ec_matrix_count), length(nrow(blastx_kegg_counts))))
-colnames(blastx_kegg_counts) = c("pathway", "mapped_enzymes", "enzymes_in_pathway", "total_core", "total_ec")
+setwd("/media/lottewitjes/Lotte Witjes/MSc_minor_thesis/statistical_analysis/") #Linux
+setwd("D:/MSc_minor_thesis/statistical_analysis/") #Windows
 
 blastn_kegg_counts = read.table(file="blastn_plots_results/blastn_kegg_enzyme_count.tsv", sep="\t", header=TRUE)
-blastn_kegg_counts = cbind(blastn_kegg_counts, rep(924, length(nrow(blastn_kegg_counts))), rep(ncol(ec_matrix_count), length(nrow(blastn_kegg_counts))))
-colnames(blastn_kegg_counts) = colnames(blastx_kegg_counts)
-
-blastn_metasapp_kegg_counts = read.table(file="blastn_metasapp_plots_results/blastn_metasapp_kegg_enzyme_count.tsv", sep="\t", header=TRUE)
-blastn_metasapp_kegg_counts = cbind(blastn_metasapp_kegg_counts, rep(1164, length(nrow(blastn_metasapp_kegg_counts))), rep(ncol(ec_matrix_count), length(nrow(blastn_metasapp_kegg_counts))))
-colnames(blastn_metasapp_kegg_counts) = colnames(blastx_kegg_counts)
+blastn_kegg_counts = cbind(blastn_kegg_counts, rep(794, length(nrow(blastn_kegg_counts))), rep(3440, length(nrow(blastn_kegg_counts))))
+colnames(blastn_kegg_counts) = c("pathway", "mapped_enzymes", "enzymes_in_pathway", "total_sample", "total_ec")
 
 hypgeo_kegg = function(counts) {
   p_values = c()
@@ -35,17 +28,9 @@ hypgeo_kegg = function(counts) {
   return(p_values)
 }
 
-blastx_kegg_counts = cbind(blastx_kegg_counts, hypgeo_kegg(blastx_kegg_counts))
-colnames(blastx_kegg_counts)[6] = "p_value_hypgeo"
-blastx_kegg_counts = blastx_kegg_counts[order(blastx_kegg_counts$p_value_hypgeo),]
-blastx_kegg_counts = blastx_kegg_counts[which(blastx_kegg_counts$p_value_hypgeo < 0.05),]
-
 blastn_kegg_counts = cbind(blastn_kegg_counts, hypgeo_kegg(blastn_kegg_counts))
 colnames(blastn_kegg_counts)[6] = "p_value_hypgeo"
+blastn_kegg_counts$p_value_hypgeo = p.adjust(blastn_kegg_counts$p_value_hypgeo, method="BH")
+
 blastn_kegg_counts = blastn_kegg_counts[order(blastn_kegg_counts$p_value_hypgeo),]
 blastn_kegg_counts = blastn_kegg_counts[which(blastn_kegg_counts$p_value_hypgeo < 0.05),]
-
-blastn_metasapp_kegg_counts = cbind(blastn_metasapp_kegg_counts, hypgeo_kegg(blastn_metasapp_kegg_counts))
-colnames(blastn_metasapp_kegg_counts)[6] = "p_value_hypgeo"
-blastn_metasapp_kegg_counts = blastn_metasapp_kegg_counts[order(blastn_metasapp_kegg_counts$p_value_hypgeo),]
-blastn_metasapp_kegg_counts = blastn_metasapp_kegg_counts[which(blastn_metasapp_kegg_counts$p_value_hypgeo < 0.05),]
