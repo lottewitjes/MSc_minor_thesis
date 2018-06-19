@@ -46,10 +46,11 @@ def give_phage_names(blast_dic):
         blast_dic[phage].append(record[0]["Title"])
     return blast_dic
 
-def write_phage_count_table(count_dic, output_file)
+def write_phage_count_table(count_dic, output_file, sample_id):
     with open(output_file, "w") as thefile:
         for phage in count_dic:
-            line_elements = [phage, count_dic[phage][1], count_dic[phage][0]]
+            print count_dic[phage][1]
+            line_elements = [sample_id, count_dic[phage][1], str(count_dic[phage][0])]
             line = "\t".join(line_elements)
             thefile.write(line + "\n")
 
@@ -57,6 +58,7 @@ if __name__ == "__main__":
     #Load arguments from command line
     blast_output = sys.argv[1]
     output_file = sys.argv[2]
+    sample_id = sys.argv[3]
 
     #Count phages
     blast_dic = blast_output_parser(blast_output)
@@ -65,5 +67,5 @@ if __name__ == "__main__":
     blast_dic = give_phage_names(blast_dic)
 
     #Write phage counts to TSV
-    write_phage_count_table(blast_dic, output_file)
+    write_phage_count_table(blast_dic, output_file, sample_id)
 
