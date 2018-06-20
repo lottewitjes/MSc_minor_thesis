@@ -2,16 +2,14 @@
 
 """A Python script to parse BLASTN/X results in tabular (6) format returning Pfam/EC/species counts per sample.
 
-python blast_pfam_ec_species_counts.py <sample_id> <blast_output> <pfam_ec_species_db> <output_file>
+python blast_pfam_ec_species_counts.py <blast_output> <pfam_ec_species_db>
 
 Keyword arguments:
-sample_id --> ID of the sample being analyzed
 blast_output --> path to the BLASTN/X output file in tabular (6) format
 pfam_ec_species_db --> path to the Pfam/EC/species database file in CSV with gene-Pfam, gene-EC, Sha384key-Pfam, Sha384key-EC, gene-species matches 
-output_file --> desired name of the output file
 
 Returns:
-output_file --> TSV file (3 columns: sample, Pfam/EC/species, count)
+output_file --> TSV file (3 columns: sample, Pfam/EC/species, count) in current directory
 """
 
 import sys
@@ -41,7 +39,8 @@ def count_pfam_ec_species(pfam_ec_species_db, blast_dic):
     dic = {}
     with open(pfam_ec_species_db, "r") as thefile:
         for line in thefile:
-            gene_protein, pfam_ec_species = line.strip().split(",")
+            gene_protein, pfam_ec_species = line.strip().split(",")[0:2]
+            pfam_ec_species = " ".join(pfam_ec_species.split(" ")[0:2]) #only for species counter, to store just genus and species name
             if gene_protein in blast_dic:
                 if pfam_ec_species in dic:
                     dic[pfam_ec_species] += (1*blast_dic[gene_protein])
@@ -58,10 +57,8 @@ def write_pfam_ec_species_counts(pfam_ec_species_count_dic, sample_id, output_fi
 if __name__ == "__main__":
     #Get variables from command line
     print "Loading arguments from command line..."
-    #sample_id = sys.argv[1]
     output_dir = sys.argv[1]
     pfam_ec_species_db = sys.argv[2]
-    #output_file = sys.argv[3]
     print "Arguments loaded"
 
     file_list = os.listdir(output_dir)
