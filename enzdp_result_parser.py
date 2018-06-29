@@ -21,6 +21,19 @@ __author__ = "Lotte Witjes"
 __email__ = "lottewitjes@outlook.com"
 __date__ = "29th of June 2018"
 
+def enzdp_parser(enzdp_res):
+    alist = []
+    with open(enzdp_res, "r") as thefile:
+        for line in thefile:
+            if not line.startswith(">") or line.startswith("gene"): #skip headers
+                gene_protein, ec_number, likelihood, bitscore = line.strip.split(",") #CSV or TSV
+                likelihood = float(likelihood)
+                bitscore = float(bitscore)
+                if ec_number.split(".")[-1] != "-" and likelihood >= 0.3 and bitscore >= 74:
+                    approved = [gene_protein, ec_number]
+                    alist.append(approved)
+    return alist
+
 if __name__ == "__main__":
     #Get arguments from command line
     enzdp_results = sys.argv[1]
