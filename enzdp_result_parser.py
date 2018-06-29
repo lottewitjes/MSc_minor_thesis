@@ -31,7 +31,6 @@ def enzdp_parser(enzdp_res):
                 bitscore = float(bitscore)
                 if ec_number.split(".")[-1] != "-" and likelihood >= 0.1 and bitscore >= 74: #specify thresholds
                     if gene_protein in dic:
-                        print gene_protein, dic[gene_protein], likelihood, bitscore
                         if likelihood >= dic[gene_protein][1] and bitscore >= dic[gene_protein][2]:
                             dic[gene_protein] = [ec_number, likelihood, bitscore]
                     else:
