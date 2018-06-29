@@ -2,11 +2,15 @@
 
 """A Python script to parse BLASTN/X results in tabular (6) format to create a subset sequence database.
 
-python make_blast_subset_db.py <blast_result_dir> <gene_protein_db>
+python make_blast_subset_db.py <blast_result_dir> <gene_protein_db> <subset_db>
 
 Keyword arguments:
+blast_result_dir --> PATH to directory containing BLASTN/X results in format 6
+gene_protein_db --> gene/protein sequence db in FASTA format
+subset_db --> name of the output FASTA file containing the subset
 
 Returns:
+subset_db --> subset gene/protein sequence db in FASTA format based on BLASTN/X results
 
 """
 
