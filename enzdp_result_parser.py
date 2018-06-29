@@ -22,17 +22,27 @@ __email__ = "lottewitjes@outlook.com"
 __date__ = "29th of June 2018"
 
 def enzdp_parser(enzdp_res):
-    alist = []
+    dic = {}
     with open(enzdp_res, "r") as thefile:
         for line in thefile:
-            if not line.startswith(">") or line.startswith("gene"): #skip headers
-                gene_protein, ec_number, likelihood, bitscore = line.strip.split(",") #CSV or TSV
+            if not line.startswith(">") and not line.startswith("gene"): #skip headers
+                gene_protein, ec_number, likelihood, bitscore = line.strip().split(",") #CSV or TSV
                 likelihood = float(likelihood)
                 bitscore = float(bitscore)
-                if ec_number.split(".")[-1] != "-" and likelihood >= 0.3 and bitscore >= 74:
-                    approved = [gene_protein, ec_number]
-                    alist.append(approved)
-    return alist
+                if ec_number.split(".")[-1] != "-" and likelihood >= 0.1 and bitscore >= 74: #specify thresholds
+                    if gene_protein in dic:
+                        print gene_protein, dic[gene_protein], likelihood, bitscore
+                        if likelihood >= dic[gene_protein][1] and bitscore >= dic[gene_protein][2]:
+                            dic[gene_protein] = [ec_number, likelihood, bitscore]
+                    else:
+                        dic[gene_protein] = [ec_number, likelihood, bitscore]
+    return dic
+
+def write_filtered_results(filtered_enzdp_res, filename):
+    with open(filename, "w") as thefile:
+        for element in filtered_enzdp_res:
+            line = ",".join([element, filtered_enzdp_res[element][0]])
+            thefile.write(line + "\n")
 
 if __name__ == "__main__":
     #Get arguments from command line
@@ -40,5 +50,8 @@ if __name__ == "__main__":
     filtered_enzdp_results_filename = sys.argv[2]
 
     #Parse and filter EnzDP results
+    filtered_enzdp_results = enzdp_parser(enzdp_results)
+    print len(filtered_enzdp_results)
 
     #Write filtered EnzDP results
+    write_filtered_results(filtered_enzdp_results, filtered_enzdp_results_filename)
