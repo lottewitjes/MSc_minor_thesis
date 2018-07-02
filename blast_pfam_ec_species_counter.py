@@ -28,7 +28,7 @@ def blast_output_parser(blast_output):
             gene_protein = elements[1]
             bit_score = float(elements[11])
             e_value = float(elements[10])
-            if e_value <= 0.0000001 and bit_score >= 110: #set bitscore and e-value cutoff
+            if e_value <= 0.0000001 and bit_score >= 74: #set bitscore and e-value cutoff
                 if gene_protein in dic:
                     dic[gene_protein] += 1
                 else:
@@ -65,7 +65,7 @@ if __name__ == "__main__":
     for file in file_list:
         if file.startswith("NG-5"):
             sample_id = file.split(".")[0]
-            output_file = "{}_species.tsv".format(sample_id) #set the extension
+            output_file = "{}_ec.tsv".format(sample_id) #set the extension
             file_name = "".join([output_dir, file])
             print sample_id, output_file
 

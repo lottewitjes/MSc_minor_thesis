@@ -26,7 +26,7 @@ def enzdp_parser(enzdp_res):
     with open(enzdp_res, "r") as thefile:
         for line in thefile:
             if not line.startswith(">") and not line.startswith("gene"): #skip headers
-                gene_protein, ec_number, likelihood, bitscore = line.strip().split(",") #CSV or TSV
+                gene_protein, ec_number, likelihood, bitscore = line.strip().split("\t") #CSV or TSV
                 likelihood = float(likelihood)
                 bitscore = float(bitscore)
                 if ec_number.split(".")[-1] != "-" and likelihood >= 0.1 and bitscore >= 74: #specify thresholds
@@ -50,7 +50,6 @@ if __name__ == "__main__":
 
     #Parse and filter EnzDP results
     filtered_enzdp_results = enzdp_parser(enzdp_results)
-    print len(filtered_enzdp_results)
 
     #Write filtered EnzDP results
     write_filtered_results(filtered_enzdp_results, filtered_enzdp_results_filename)
