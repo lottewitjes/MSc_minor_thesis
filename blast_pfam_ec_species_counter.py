@@ -28,7 +28,7 @@ def blast_output_parser(blast_output):
             gene_protein = elements[1]
             bit_score = float(elements[11])
             e_value = float(elements[10])
-            if e_value <= 0.0000001 and bit_score >= 74: #set bitscore and e-value cutoff
+            if e_value <= 0.0000001 and bit_score >= 110: #set bitscore and e-value cutoff
                 if gene_protein in dic:
                     dic[gene_protein] += 1
                 else:
@@ -40,7 +40,7 @@ def count_pfam_ec_species(pfam_ec_species_db, blast_dic):
     with open(pfam_ec_species_db, "r") as thefile:
         for line in thefile:
             gene_protein, pfam_ec_species = line.strip().split(",")[0:2]
-            pfam_ec_species = " ".join(pfam_ec_species.split(" ")[0:2]) #only for species counter, to store just genus and species name
+            pfam_ec_species = " ".join(pfam_ec_species.split(" ")[0:1]) #only for species counter, to store just genus and species name
             if gene_protein in blast_dic:
                 if pfam_ec_species in dic:
                     dic[pfam_ec_species] += (1*blast_dic[gene_protein])
@@ -65,7 +65,7 @@ if __name__ == "__main__":
     for file in file_list:
         if file.startswith("NG-5"):
             sample_id = file.split(".")[0]
-            output_file = "{}_ec.tsv".format(sample_id) #set the extension
+            output_file = "{}_genus.tsv".format(sample_id) #set the extension
             file_name = "".join([output_dir, file])
             print sample_id, output_file
 
