@@ -17,7 +17,8 @@ library(vegan)
 library(dendextend)
 
 #Set working directory
-setwd("/media/lottewitjes/Lotte Witjes/MSc_minor_thesis/statistical_analysis/")
+#setwd("/media/lottewitjes/Lotte Witjes/MSc_minor_thesis/statistical_analysis/") #Linux
+setwd("D:/MSc_minor_thesis/statistical_analysis/") #Windows
 
 ##################################reads#########################################################################################################################
 #Load data
@@ -44,9 +45,10 @@ read_plot
 
 ###############################domain/enzyme analyses and plots#################################################################################################
 #Load data
-setwd("/media/lottewitjes/Lotte Witjes/MSc_minor_thesis/statistical_analysis/blastn_plots_results/")
-pfam_count = read.table(file="blastn_pfam_count.tsv", sep="\t", header=FALSE)
-ec_count = read.table(file="blastn_ec_count.tsv", sep="\t", header=FALSE)
+#setwd("/media/lottewitjes/Lotte Witjes/MSc_minor_thesis/statistical_analysis/blastn_results/") #Linux
+setwd("D:/MSc_minor_thesis/statistical_analysis/blastx_results/") #Windows
+pfam_count = read.table(file="blastx_pfam_count.tsv", sep="\t", header=FALSE)
+ec_count = read.table(file="blastx_ec_count_new.tsv", sep="\t", header=FALSE)
 
 #Set column names
 colnames(pfam_count) = c("Sample", "Pfam", "Count")
@@ -71,48 +73,34 @@ ec_matrix_count = as.matrix(acast(ec_count, Sample~EC, value.var="Count", fill=0
 pfam_matrix_count_scaled = scale(pfam_matrix_count, center=FALSE, scale=TRUE)
 ec_matrix_count_scaled = scale(ec_matrix_count, center=FALSE, scale=TRUE)
 
-#Domain/enzyme alpha/beta/gamma diversity#######################################################################################################################
-beta_diversity_pfam = diversity(pfam_matrix_count_scaled, index="shannon")
-alpha_diversity_pfam = fisher.alpha(pfam_matrix_count)
+#Domain/enzyme Shannon diversity and richness#######################################################################################################################
+shannon_diversity_pfam = diversity(pfam_matrix_count, index="shannon")
 richness_pfam = specnumber(pfam_matrix_count)
 
-beta_diversity_ec = diversity(ec_matrix_count_scaled, index="shannon") #beta diversity is a measure for similarity and overlap between samples of distributions
-alpha_diversity_ec = fisher.alpha(ec_matrix_count) #alpha diversity is average diversity within community
-richness_ec = specnumber(ec_matrix_count) #species richness is simple species count
+shannon_diversity_ec = diversity(ec_matrix_count, index="shannon")
+richness_ec = specnumber(ec_matrix_count)
 
 timepoints = c("Day 3, morning", "Day 1, morning", "Day 1, morning", "Day 1, afternoon", "Day 3, morning", "Day 3, afternoon",
                "Day 1, morning", "Day 1, afternoon", "Day 3, morning", "Day 3, afternoon", "Day 1, morning", "Day 1, afternoon",
                "Day 3, morning", "Day 3, afternoon", "Day 1, morning", "Day 1, afternoon", "Day 3, morning", "Day 3, afternoon")
-diversity_df_pfam = data.frame(subject, timepoints, beta_diversity_pfam, alpha_diversity_pfam, richness_pfam)
+
+diversity_df_pfam = data.frame(subject, timepoints, shannon_diversity_pfam, richness_pfam)
 diversity_df_pfam = diversity_df_pfam[-c(1,2),]
-diversity_df_ec = data.frame(subject, timepoints, beta_diversity_ec, alpha_diversity_ec, richness_ec)
+diversity_df_ec = data.frame(subject, timepoints, shannon_diversity_ec, richness_ec)
 diversity_df_ec = diversity_df_ec[-c(1,2),]  
 
-beta_diversity_pfam_plot = ggplot(data = diversity_df_pfam, aes(x=timepoints, y=beta_diversity_pfam, group=subject)) +
+shannon_diversity_pfam_plot = ggplot(data = diversity_df_pfam, aes(x=timepoints, y=shannon_diversity_pfam, group=subject)) +
                            geom_line(aes(color=subject), size=3) +
                            geom_point(aes(color=subject), size=5) +
                            scale_color_manual(values=c("#a6cee3", "#b2df8a", "#1f78b4", "#33a02c")) +
                            scale_x_discrete(limits=c("Day 1, morning", "Day 1, afternoon", "Day 3, morning", "Day 3, afternoon")) +
-                           xlab("Timepoints") + ylab("Beta diversity (Shannon Index)") +
+                           xlab("Timepoints") + ylab("Shannon diversity") +
                            labs(title="Pfam") +
                            theme_classic() + theme(axis.title.x=element_text(size=22,colour="black"), axis.text.x=element_text(size=20,colour="black"),
                                                    axis.title.y=element_text(size=22,colour="black"), axis.text.y=element_text(size=20,colour="black"),
                                                    legend.title=element_text(size=22,colour="black"), legend.text=element_text(size=20,colour="black"),
                                                    plot.title=element_text(size=22,colour="black"))
-beta_diversity_pfam_plot
-
-alpha_diversity_pfam_plot = ggplot(data = diversity_df_pfam, aes(x=timepoints, y=alpha_diversity_pfam, group=subject)) +
-                            geom_line(aes(color=subject), size=3) +
-                            geom_point(aes(color=subject), size=5) +
-                            scale_color_manual(values=c("#a6cee3", "#b2df8a", "#1f78b4", "#33a02c")) +
-                            scale_x_discrete(limits=c("Day 1, morning", "Day 1, afternoon", "Day 3, morning", "Day 3, afternoon")) +
-                            xlab("Timepoints") + ylab("Alpha diversity (Fisher)") +
-                            labs(title="Pfam") +
-                            theme_classic() + theme(axis.title.x=element_text(size=22,colour="black"), axis.text.x=element_text(size=20,colour="black"),
-                                                    axis.title.y=element_text(size=22,colour="black"), axis.text.y=element_text(size=20,colour="black"),
-                                                    legend.title=element_text(size=22,colour="black"), legend.text=element_text(size=20,colour="black"),
-                                                    plot.title=element_text(size=22,colour="black"))
-alpha_diversity_pfam_plot
+shannon_diversity_pfam_plot
 
 richness_pfam_plot = ggplot(data = diversity_df_pfam, aes(x=timepoints, y=richness_pfam, group=subject)) +
                      geom_line(aes(color=subject), size=3) +
@@ -127,31 +115,18 @@ richness_pfam_plot = ggplot(data = diversity_df_pfam, aes(x=timepoints, y=richne
                                              plot.title=element_text(size=22,colour="black"))
 richness_pfam_plot
 
-beta_diversity_ec_plot = ggplot(data = diversity_df_ec, aes(x=timepoints, y=beta_diversity_ec, group=subject)) +
+shannon_diversity_ec_plot = ggplot(data = diversity_df_ec, aes(x=timepoints, y=shannon_diversity_ec, group=subject)) +
                            geom_line(aes(color=subject), size=3) +
                            geom_point(aes(color=subject), size=5) +
                            scale_color_manual(values=c("#a6cee3", "#b2df8a", "#1f78b4", "#33a02c")) +
                            scale_x_discrete(limits=c("Day 1, morning", "Day 1, afternoon", "Day 3, morning", "Day 3, afternoon")) +
-                           xlab("Timepoints") + ylab("Beta diversity (Shannon Index)") +
+                           xlab("Timepoints") + ylab("Shannon diversity") +
                            labs(title="EC") +
                            theme_classic() + theme(axis.title.x=element_text(size=22,colour="black"), axis.text.x=element_text(size=20,colour="black"),
                                                    axis.title.y=element_text(size=22,colour="black"), axis.text.y=element_text(size=20,colour="black"),
                                                    legend.title=element_text(size=22,colour="black"), legend.text=element_text(size=20,colour="black"),
                                                    plot.title=element_text(size=22,colour="black"))
-beta_diversity_ec_plot
-
-alpha_diversity_ec_plot = ggplot(data = diversity_df_ec, aes(x=timepoints, y=alpha_diversity_ec, group=subject)) +
-                            geom_line(aes(color=subject), size=3) +
-                            geom_point(aes(color=subject), size=5) +
-                            scale_color_manual(values=c("#a6cee3", "#b2df8a", "#1f78b4", "#33a02c")) +
-                            scale_x_discrete(limits=c("Day 1, morning", "Day 1, afternoon", "Day 3, morning", "Day 3, afternoon")) +
-                            xlab("Timepoints") + ylab("Alpha diversity (Fisher)") +
-                            labs(title="EC") +
-                            theme_classic() + theme(axis.title.x=element_text(size=22,colour="black"), axis.text.x=element_text(size=20,colour="black"),
-                                                    axis.title.y=element_text(size=22,colour="black"), axis.text.y=element_text(size=20,colour="black"),
-                                                    legend.title=element_text(size=22,colour="black"), legend.text=element_text(size=20,colour="black"),
-                                                    plot.title=element_text(size=22,colour="black"))
-alpha_diversity_ec_plot
+shannon_diversity_ec_plot
 
 richness_ec_plot = ggplot(data = diversity_df_ec, aes(x=timepoints, y=richness_ec, group=subject)) +
                    geom_line(aes(color=subject), size=3) +
@@ -312,7 +287,6 @@ venn_pfam = draw.quad.venn(area1=length(subject1_pfam), area2=length(subject2_pf
                           "Subject 3 male", "Subject 4 female"),
                fill=c("#a6cee3", "#b2df8a", "#1f78b4", "#33a02c"),
                cex=2.2, cat.cex=2.2)
-grid.text("Pfam domains", vjust=-23, gp=gpar(fontfamily="serif",cex=2))
 
 grid.newpage()
 venn_ec = draw.quad.venn(area1=length(subject1_ec), area2=length(subject2_ec),
@@ -327,7 +301,6 @@ venn_ec = draw.quad.venn(area1=length(subject1_ec), area2=length(subject2_ec),
                                     "Subject 3 male", "Subject 4 female"),
                          fill=c("#a6cee3", "#b2df8a", "#1f78b4", "#33a02c"),
                          cex=2.2, cat.cex=2.2)
-grid.text("ECs", vjust=-23, gp=gpar(fontfamily="serif",cex=2))
 
 #Venn-diagram WITHIN subjects###################################################################################################################################
 subject1_samples = c("NG-5593_1A", "NG-5593_1B", "NG-5593_1C", "NG-5593_1D")
@@ -417,15 +390,15 @@ rarefaction_ec
 
 #Functions core domainome and enzymome##########################################################################################################################
 core_domainome = pfam_matrix_count[,subject_all_pfam]
-core_domainome = colMeans(core_domainome)
+core_domainome = colMeans(core_domainome) #Average count per domain
 core_domainome = sort(core_domainome, decreasing=TRUE)
 
 core_enzymome = ec_matrix_count[,subject_all_ec]
-core_enzymome = colMeans(core_enzymome)
+core_enzymome = colMeans(core_enzymome) #Average count per enzyme
 core_enzymome = sort(core_enzymome, decreasing=TRUE)
 
-write.table(core_domainome, file="blastn_core_domainome.tsv", sep="\t", col.names=FALSE, quote=FALSE)
-write.table(core_enzymome, file="blastn_core_enzymome.tsv", sep="\t", col.names=FALSE, quote=FALSE)
+write.table(core_domainome, file="blastx_core_domainome.tsv", sep="\t", col.names=FALSE, quote=FALSE)
+write.table(core_enzymome, file="blastx_core_enzymome.tsv", sep="\t", col.names=FALSE, quote=FALSE)
 
 #Unique domainome and enzymome##################################################################################################################################
 unique_domainome_sub1 = pfam_matrix_count[subject1_samples,subject1_unique_pfam]
@@ -444,10 +417,10 @@ unique_domainome_sub4 = pfam_matrix_count[subject4_samples,subject4_unique_pfam]
 unique_domainome_sub4 = colMeans(unique_domainome_sub4)
 unique_domainome_sub4 = sort(unique_domainome_sub4, decreasing=TRUE)
 
-write.table(unique_domainome_sub1, file="blastn_unique_domainome_sub1.tsv", sep="\t", col.names=FALSE, quote=FALSE)
-write.table(unique_domainome_sub2, file="blastn_unique_domainome_sub2.tsv", sep="\t", col.names=FALSE, quote=FALSE)
-write.table(unique_domainome_sub3, file="blastn_unique_domainome_sub3.tsv", sep="\t", col.names=FALSE, quote=FALSE)
-write.table(unique_domainome_sub4, file="blastn_unique_domainome_sub4.tsv", sep="\t", col.names=FALSE, quote=FALSE)
+write.table(unique_domainome_sub1, file="blastx_unique_domainome_sub1.tsv", sep="\t", col.names=FALSE, quote=FALSE)
+write.table(unique_domainome_sub2, file="blastx_unique_domainome_sub2.tsv", sep="\t", col.names=FALSE, quote=FALSE)
+write.table(unique_domainome_sub3, file="blastx_unique_domainome_sub3.tsv", sep="\t", col.names=FALSE, quote=FALSE)
+write.table(unique_domainome_sub4, file="blastx_unique_domainome_sub4.tsv", sep="\t", col.names=FALSE, quote=FALSE)
 
 unique_enzymome_sub1 = ec_matrix_count[subject1_samples,subject1_unique_ec]
 unique_enzymome_sub1 = colMeans(unique_enzymome_sub1)
@@ -465,10 +438,10 @@ unique_enzymome_sub4 = ec_matrix_count[subject4_samples,subject4_unique_ec]
 unique_enzymome_sub4 = colMeans(unique_enzymome_sub4)
 unique_enzymome_sub4 = sort(unique_enzymome_sub4, decreasing=TRUE)
 
-write.table(unique_enzymome_sub1, file="blastn_unique_enzymome_sub1.tsv", sep="\t", col.names=FALSE, quote=FALSE)
-write.table(unique_enzymome_sub2, file="blastn_unique_enzymome_sub2.tsv", sep="\t", col.names=FALSE, quote=FALSE)
-write.table(unique_enzymome_sub3, file="blastn_unique_enzymome_sub3.tsv", sep="\t", col.names=FALSE, quote=FALSE)
-write.table(unique_enzymome_sub4, file="blastn_unique_enzymome_sub4.tsv", sep="\t", col.names=FALSE, quote=FALSE)
+write.table(unique_enzymome_sub1, file="blastx_unique_enzymome_sub1.tsv", sep="\t", col.names=FALSE, quote=FALSE)
+write.table(unique_enzymome_sub2, file="blastx_unique_enzymome_sub2.tsv", sep="\t", col.names=FALSE, quote=FALSE)
+write.table(unique_enzymome_sub3, file="blastx_unique_enzymome_sub3.tsv", sep="\t", col.names=FALSE, quote=FALSE)
+write.table(unique_enzymome_sub4, file="blastx_unique_enzymome_sub4.tsv", sep="\t", col.names=FALSE, quote=FALSE)
 
 #Write color coded TSVs for KEGG plotting#######################################################################################################################
 colors_unique_enzymome_sub1 = cbind(rep("sub1_male", length(unique_enzymome_sub1)), names(unique_enzymome_sub1), rep("#a6cee3", length(unique_enzymome_sub1)))
@@ -478,10 +451,10 @@ colors_unique_enzymome_sub4 = cbind(rep("sub4_female", length(unique_enzymome_su
 
 colors_core_enzymome = cbind(rep("core_enzymome", length(core_enzymome)), names(core_enzymome), rep("#ff0000", length(core_enzymome)))
 
-write.table(colors_unique_enzymome_sub1, file="blastn_unique_enzymome_sub1_colors.tsv", sep="\t", col.names=FALSE, row.names=FALSE, quote=FALSE)
-write.table(colors_unique_enzymome_sub2, file="blastn_unique_enzymome_sub2_colors.tsv", sep="\t", col.names=FALSE, row.names=FALSE, quote=FALSE)
-write.table(colors_unique_enzymome_sub3, file="blastn_unique_enzymome_sub3_colors.tsv", sep="\t", col.names=FALSE, row.names=FALSE, quote=FALSE)
-write.table(colors_unique_enzymome_sub4, file="blastn_unique_enzymome_sub4_colors.tsv", sep="\t", col.names=FALSE, row.names=FALSE, quote=FALSE)
+write.table(colors_unique_enzymome_sub1, file="blastx_unique_enzymome_sub1_colors.tsv", sep="\t", col.names=FALSE, row.names=FALSE, quote=FALSE)
+write.table(colors_unique_enzymome_sub2, file="blastx_unique_enzymome_sub2_colors.tsv", sep="\t", col.names=FALSE, row.names=FALSE, quote=FALSE)
+write.table(colors_unique_enzymome_sub3, file="blastx_unique_enzymome_sub3_colors.tsv", sep="\t", col.names=FALSE, row.names=FALSE, quote=FALSE)
+write.table(colors_unique_enzymome_sub4, file="blastx_unique_enzymome_sub4_colors.tsv", sep="\t", col.names=FALSE, row.names=FALSE, quote=FALSE)
 
-write.table(colors_core_enzymome, file="blastn_core_enzymome_colors.tsv", sep="\t", col.names=FALSE, row.names=FALSE, quote=FALSE)
+write.table(colors_core_enzymome, file="blastx_core_enzymome_colors.tsv", sep="\t", col.names=FALSE, row.names=FALSE, quote=FALSE)
 
