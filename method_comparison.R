@@ -11,18 +11,18 @@ library(dendextend)
 
 #PCA of three methods together###################################################################################################################################
 #Set working directory
-setwd("/media/lottewitjes/Lotte Witjes/MSc_minor_thesis/statistical_analysis/") #Linux
-#setwd("D:/MSc_minor_thesis/statistical_analysis/") #Windows
+#setwd("/media/lottewitjes/Lotte Witjes/MSc_minor_thesis/statistical_analysis/") #Linux
+setwd("D:/MSc_minor_thesis/statistical_analysis/") #Windows
 
 #Load the count tables
-blastx_pfam_count = read.table(file="blastx_plots_results/blastx_pfam_count.tsv", sep="\t", header=FALSE, stringsAsFactors=FALSE)
-blastx_ec_count = read.table(file="blastx_plots_results/blastx_ec_count.tsv", sep="\t", header=FALSE, stringsAsFactors=FALSE)
+blastx_pfam_count = read.table(file="blastx_results/blastx_pfam_count.tsv", sep="\t", header=FALSE, stringsAsFactors=FALSE)
+blastx_ec_count = read.table(file="blastx_results/blastx_ec_count_new.tsv", sep="\t", header=FALSE, stringsAsFactors=FALSE)
 
-blastn_pfam_count = read.table(file="blastn_plots_results/blastn_pfam_count.tsv", sep="\t", header=FALSE, stringsAsFactors=FALSE)
-blastn_ec_count = read.table(file="blastn_plots_results/blastn_ec_count.tsv", sep="\t", header=FALSE, stringsAsFactors=FALSE)
+blastn_pfam_count = read.table(file="blastn_results/blastn_pfam_count.tsv", sep="\t", header=FALSE, stringsAsFactors=FALSE)
+blastn_ec_count = read.table(file="blastn_results/blastn_ec_count_new.tsv", sep="\t", header=FALSE, stringsAsFactors=FALSE)
 
-blastn_metasapp_pfam_count = read.table(file="blastn_metasapp_plots_results/blastn_metasapp_pfam_count.tsv", sep="\t", header=FALSE, stringsAsFactors=FALSE)
-blastn_metasapp_ec_count = read.table(file="blastn_metasapp_plots_results/blastn_metasapp_ec_count.tsv", sep="\t", header=FALSE, stringsAsFactors=FALSE)
+blastn_metasapp_pfam_count = read.table(file="metasapp_results/blastn_metasapp_pfam_count.tsv", sep="\t", header=FALSE, stringsAsFactors=FALSE)
+blastn_metasapp_ec_count = read.table(file="metasapp_results/metasapp_ec_count_new.tsv", sep="\t", header=FALSE, stringsAsFactors=FALSE)
 
 #Change the sample IDs
 format_sample_ids = function (atable,method) {

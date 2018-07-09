@@ -13,9 +13,9 @@ library(dendextend)
 setwd("/media/lottewitjes/Lotte Witjes/MSc_minor_thesis/statistical_analysis/") #Linux
 setwd("D:/MSc_minor_thesis/statistical_analysis/") #Windows
 
-blastn_kegg_counts = read.table(file="blastn_plots_results/blastn_kegg_enzyme_count.tsv", sep="\t", header=TRUE)
-blastn_kegg_counts = cbind(blastn_kegg_counts, rep(794, length(nrow(blastn_kegg_counts))), rep(3440, length(nrow(blastn_kegg_counts))))
-colnames(blastn_kegg_counts) = c("pathway", "mapped_enzymes", "enzymes_in_pathway", "total_sample", "total_ec")
+blastx_kegg_counts = read.table(file="blastx_results/blastx_kegg_enzyme_count.tsv", sep="\t", header=TRUE)
+blastx_kegg_counts = cbind(blastx_kegg_counts, rep(734, length(nrow(blastx_kegg_counts))), rep(3440, length(nrow(blastx_kegg_counts))))
+colnames(blastx_kegg_counts) = c("pathway", "mapped_enzymes", "enzymes_in_pathway", "total_sample", "total_ec")
 
 hypgeo_kegg = function(counts) {
   p_values = c()
@@ -28,9 +28,9 @@ hypgeo_kegg = function(counts) {
   return(p_values)
 }
 
-blastn_kegg_counts = cbind(blastn_kegg_counts, hypgeo_kegg(blastn_kegg_counts))
-colnames(blastn_kegg_counts)[6] = "p_value_hypgeo"
-blastn_kegg_counts$p_value_hypgeo = p.adjust(blastn_kegg_counts$p_value_hypgeo, method="BH")
+blastx_kegg_counts = cbind(blastx_kegg_counts, hypgeo_kegg(blastx_kegg_counts))
+colnames(blastx_kegg_counts)[6] = "p_value_hypgeo"
+blastx_kegg_counts$p_value_hypgeo = p.adjust(blastx_kegg_counts$p_value_hypgeo, method="BH")
 
-blastn_kegg_counts = blastn_kegg_counts[order(blastn_kegg_counts$p_value_hypgeo),]
-blastn_kegg_counts = blastn_kegg_counts[which(blastn_kegg_counts$p_value_hypgeo < 0.05),]
+blastx_kegg_counts = blastx_kegg_counts[order(blastx_kegg_counts$p_value_hypgeo),]
+blastx_kegg_counts = blastx_kegg_counts[which(blastx_kegg_counts$p_value_hypgeo < 0.05),]
