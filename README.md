@@ -1,2 +1,2 @@
 # MSc_minor_thesis
-Congruency of phylogenetic composition and activity patterns in the small intestine.
+Meta-omics of the human small intestines to explore functional and compositional diversity
