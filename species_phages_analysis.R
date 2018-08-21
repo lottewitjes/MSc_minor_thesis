@@ -14,7 +14,7 @@ library(dendextend)
 setwd("D:/MSc_minor_thesis/statistical_analysis/species_genera_phages/")
 
 #Load the data
-species_counts = read.table(file="blastn_species_counts.tsv", sep="\t", header=FALSE, stringsAsFactors=FALSE)
+species_counts = read.table(file="blastn_species_counts_without_strain.tsv", sep="\t", header=FALSE, stringsAsFactors=FALSE)
 phages_counts = read.table(file="blastn_phage_count.tsv", sep="\t", header=FALSE, stringsAsFactors=FALSE)
 
 #Set column names
@@ -27,10 +27,13 @@ phages_counts = phages_counts[phages_counts$Count > 0,]
 
 #Specify the labels
 sample_names = c("m.s1.d1.mrn", "m.s1.d1.aft", "m.s1.d3.mrn", "m.s1.d3.aft",
-                 "f.s2.d1.mrn", "f.s2.d1.aft", "f.s2.d3.mrn", "f.s2.d3.aft", "m.s3.d1.mrn", "m.s3.d1.aft", "m.s3.d3.mrn",
-                 "m.s3.d3.aft", "f.s4.d1.mrn", "f.s4.d1.aft", "f.s4.d3.mrn", "f.s4.d3.aft")
-subject = c("1 male", "1 male", "1 male", "1 male", "2 female", "2 female", "2 female", "2 female", "3 male", "3 male",
-            "3 male", "3 male", "4 female", "4 female", "4 female", "4 female")
+                 "f.s2.d1.mrn", "f.s2.d1.aft", "f.s2.d3.mrn", "f.s2.d3.aft", 
+                 "m.s3.d1.mrn", "m.s3.d1.aft", "m.s3.d3.mrn", "m.s3.d3.aft", 
+                 "f.s4.d1.mrn", "f.s4.d1.aft", "f.s4.d3.mrn", "f.s4.d3.aft")
+subject = c("1 male", "1 male", "1 male", "1 male", 
+            "2 female", "2 female", "2 female", "2 female", 
+            "3 male", "3 male", "3 male", "3 male", 
+            "4 female", "4 female", "4 female", "4 female")
 
 #Transform data into matrices
 species_matrix_count = as.matrix(acast(species_counts, Sample~Species, value.var="Count", fill=0, fun.aggregate=sum))
@@ -114,7 +117,7 @@ genus_matrix_count = as.matrix(acast(genus_counts, Sample~Genus, value.var="Coun
 
 average_genus_counts = colMeans(genus_matrix_count)
 average_genus_counts = sort(average_genus_counts, decreasing=TRUE)
-top10_genus = names(average_genus_counts[1:10])
+top10_genus = names(average_genus_counts[1:9])
 
 `%ni%` <- Negate(`%in%`)
 
@@ -269,3 +272,66 @@ venn_phages = draw.quad.venn(area1=length(subject1_phages), area2=length(subject
                            fill=c("#a6cee3", "#b2df8a", "#1f78b4", "#33a02c"),
                            cex=2.2, cat.cex=2.2)
 
+#Unique species and phages per subject####################################################################################################
+subject1_unique_species = Reduce(setdiff, list(subject1_species, subject_1_2_species, subject_1_2_3_species, subject_1_3_species, subject_1_4_species,
+                                            subject_1_2_4_species, subject_all_species, subject_1_3_4_species))
+subject2_unique_species = Reduce(setdiff, list(subject2_species, subject_1_2_species, subject_1_2_3_species, subject_2_3_species, subject_2_4_species,
+                                            subject_1_2_4_species, subject_all_species, subject_2_3_4_species))
+subject3_unique_species = Reduce(setdiff, list(subject3_species, subject_1_3_species, subject_1_2_3_species, subject_2_3_species, subject_3_4_species,
+                                            subject_all_species, subject_2_3_4_species))
+subject4_unique_species = Reduce(setdiff, list(subject4_species, subject_1_4_species, subject_2_4_species, subject_3_4_species, subject_1_3_4_species,
+                                            subject_1_2_4_species, subject_2_3_4_species))
+
+subject1_unique_phages = Reduce(setdiff, list(subject1_phages, subject_1_2_phages, subject_1_2_3_phages, subject_1_3_phages, subject_1_4_phages,
+                                          subject_1_2_4_phages, subject_all_phages, subject_1_3_4_phages))
+subject2_unique_phages = Reduce(setdiff, list(subject2_phages, subject_1_2_phages, subject_1_2_3_phages, subject_2_3_phages, subject_2_4_phages,
+                                          subject_1_2_4_phages, subject_all_phages, subject_2_3_4_phages))
+subject3_unique_phages = Reduce(setdiff, list(subject3_phages, subject_1_3_phages, subject_1_2_3_phages, subject_2_3_phages, subject_3_4_phages,
+                                          subject_all_phages, subject_2_3_4_phages))
+subject4_unique_phages = Reduce(setdiff, list(subject4_phages, subject_1_4_phages, subject_2_4_phages, subject_3_4_phages, subject_1_3_4_phages,
+                                          subject_1_2_4_phages, subject_2_3_4_phages))
+
+subject1_samples = c("NG-5593_1A", "NG-5593_1B", "NG-5593_1C", "NG-5593_1D")
+subject2_samples = c("NG-5593_2A", "NG-5593_2B", "NG-5593_2C", "NG-5593_2D")
+subject3_samples = c("NG-5593_3A", "NG-5593_3B", "NG-5593_3C", "NG-5593_3D")
+subject4_samples = c("NG-5593_4A", "NG-5593_4B", "NG-5593_4C", "NG-5593_4D")
+
+unique_species_sub1 = species_matrix_count[subject1_samples,subject1_unique_species]
+unique_species_sub1 = colMeans(unique_species_sub1)
+unique_species_sub1 = sort(unique_species_sub1, decreasing=TRUE)
+
+unique_species_sub2 = species_matrix_count[subject2_samples,subject2_unique_species]
+unique_species_sub2 = colMeans(unique_species_sub2)
+unique_species_sub2 = sort(unique_species_sub2, decreasing=TRUE)
+
+unique_species_sub3 = species_matrix_count[subject3_samples,subject3_unique_species]
+unique_species_sub3 = colMeans(unique_species_sub3)
+unique_species_sub3 = sort(unique_species_sub3, decreasing=TRUE)
+
+unique_species_sub4 = species_matrix_count[subject4_samples,subject4_unique_species]
+unique_species_sub4 = colMeans(unique_species_sub4)
+unique_species_sub4 = sort(unique_species_sub4, decreasing=TRUE)
+
+unique_phages_sub1 = phages_matrix_count[subject1_samples,subject1_unique_phages]
+unique_phages_sub1 = colMeans(unique_phages_sub1)
+unique_phages_sub1 = sort(unique_phages_sub1, decreasing=TRUE)
+
+unique_phages_sub2 = phages_matrix_count[subject2_samples,subject2_unique_phages]
+unique_phages_sub2 = colMeans(unique_phages_sub2)
+unique_phages_sub2 = sort(unique_phages_sub2, decreasing=TRUE)
+
+unique_phages_sub3 = phages_matrix_count[subject3_samples,subject3_unique_phages]
+unique_phages_sub3 = colMeans(unique_phages_sub3)
+unique_phages_sub3 = sort(unique_phages_sub3, decreasing=TRUE)
+
+unique_phages_sub4 = phages_matrix_count[subject4_samples,subject4_unique_phages]
+unique_phages_sub4 = colMeans(unique_phages_sub4)
+unique_phages_sub4 = sort(unique_phages_sub4, decreasing=TRUE)
+
+core_species = species_matrix_count[, subject_all_species]
+core_species = colMeans(core_species)
+core_species = sort(core_species, decreasing=TRUE)
+
+core_phages = phages_matrix_count[, subject_all_phages]
+core_phages = colMeans(core_phages)
+core_phages = sort(core_phages, decreasing=TRUE)
