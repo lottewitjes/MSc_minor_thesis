@@ -27,15 +27,17 @@ def silva_parser(silva_db):
             if line.startswith(">"):
                 elements = line.strip().split(" ")
                 if elements[1].startswith("Bacteria") or elements[1].startswith("Archaea"):
+                    print elements
                     silva_id = elements[0].strip(">")
-                    genus = elements[1].split(";")[-2].strip("[").strip("]")
-                    dic[silva_id] = genus
+                    genus = elements[1].split(";")[-1].strip("[").strip("]")
+                    species = " ".join([genus, elements[-1]])
+                    dic[silva_id] = genus, species
     return dic
 
 def write_genus_db(genus_dic, output_name):
     with open(output_name, "w") as thefile:
         for element in genus_dic:
-            line = ",".join([element, genus_dic[element]])
+            line = ",".join([element, genus_dic[element][0], genus_dic[element][1]])
             thefile.write(line + "\n")
 
 if __name__ == "__main__":
